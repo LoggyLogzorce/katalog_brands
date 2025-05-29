@@ -1,0 +1,29 @@
+{{ define "header" }}
+<header class="header">
+    <a href="/" class="logo">CosmoBrands</a>
+
+    <nav class="nav">
+        <ul class="nav-list">
+            <li><a href="/">Главная</a></li>
+            <li><a href="/brands">Бренды</a></li>
+            <li><a href="/categories">Категории</a></li>
+        </ul>
+    </nav>
+
+    <label>
+        <input type="text" class="search-bar" placeholder="Поиск брендов и товаров...">
+    </label>
+
+    <div class="header-icons">
+        <span>♡</span>
+        {{ if eq .Role "user" }}
+        <a href="/profile" class="icon">👤 Профиль</a>
+        {{ else if eq .Role "creator" }}
+        <a href="/brands/edit" class="icon">✏️ Редактировать бренды</a>
+        <a href="/profile" class="icon">👤 Профиль</a>
+        {{ else }}
+        <a href="/auth" class="icon">👤 Войти</a>
+        {{ end }}
+    </div>
+</header>
+{{ end }}

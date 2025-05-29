@@ -1,0 +1,62 @@
+{{ template "base" . }}
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="/static/css/index.css" rel="stylesheet">
+    <link href="/static/css/header.css" rel="stylesheet">
+</head>
+<body>
+
+{{ template "header" . }}
+
+<!-- Герой-секция -->
+<section class="hero">
+    <h1>Откройте для себя лучшие косметические бренды</h1>
+    <div class="cta-buttons">
+        <a href="/brands" class="btn btn-primary">Посмотреть все бренды</a>
+        <a href="/categories" class="btn btn-primary">Посмотреть все категории</a>
+    </div>
+</section>
+
+<!-- Популярные бренды -->
+<section class="section">
+    <h2 class="section-title">Популярное сейчас</h2>
+    <div class="brands-grid">
+        <!-- Пример карточки бренда -->
+        <div class="brand-card">
+            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
+            <h3>LuxCare</h3>
+            <div class="rating">★★★★☆ (4.2)</div>
+            <p>Премиальный уход за кожей</p>
+            <button class="btn btn-primary">Подробнее</button>
+        </div>
+        <div class="brand-card">
+            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
+            <h3>LuxCare</h3>
+            <div class="rating">★★★★☆ (4.2)</div>
+            <p>Премиальный уход за кожей</p>
+            <button class="btn btn-primary">Подробнее</button>
+        </div>
+        <div class="brand-card">
+            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
+            <h3>LuxCare</h3>
+            <div class="rating">★★★★☆ (4.2)</div>
+            <p>Премиальный уход за кожей</p>
+            <button class="btn btn-primary">Подробнее</button>
+        </div>
+        <div class="brand-card">
+            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
+            <h3>LuxCare</h3>
+            <div class="rating">★★★★☆ (4.2)</div>
+            <p>Премиальный уход за кожей</p>
+            <button class="btn btn-primary">Подробнее</button>
+        </div>
+    </div>
+</section>
+
+<!-- Новые бренды -->
+<section class="section">
+    <h2 class="section-title">Новинки</h2>
+    <div class="brands-grid">
+        <!-- Карточки новых брендов -->
+    </div>
+</section>
+{{ template "footer" . }}

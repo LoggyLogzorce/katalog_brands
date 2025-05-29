@@ -1,0 +1,18 @@
+{{ template "base" . }}
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="/static/css/index.css" rel="stylesheet">
+<link href="/static/css/header.css" rel="stylesheet">
+<link href="/static/css/brands.css" rel="stylesheet">
+</head>
+<body>
+
+{{ template "header" . }}
+
+<section class="section">
+    <h1 class="section-title">Все бренды</h1>
+    <div id="brands-list" class="brands-grid"></div>
+</section>
+
+<script src="/static/js/brands.js"></script>
+
+{{ template "footer" . }}

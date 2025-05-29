@@ -1,0 +1,116 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #FFF;
+    color: #333;
+}
+
+.logo {
+    font-size: 1.5rem;
+    color: #FFB6C1;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.search-bar {
+    flex: 0 1 500px;
+    padding: 0.8rem;
+    border: 1px solid #F5F5DC;
+    border-radius: 25px;
+    margin: 0 2rem;
+}
+
+/* Герой-секция */
+.hero {
+    margin-top: 80px;
+    padding: 4rem 5%;
+    background: linear-gradient(rgba(255,182,193,0.1), rgba(245,245,220,0.1)),
+    url('hero-bg.jpg') center/cover;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #444;
+}
+
+.cta-buttons {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-primary {
+    background: #FFB6C1;
+    color: white;
+}
+
+/* Секции с брендами */
+.section {
+    padding: 3rem 5%;
+}
+
+.section-title {
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+}
+
+.brands-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.brand-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.brand-card:hover {
+    transform: translateY(-5px);
+}
+
+.brand-logo {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+}
+
+.rating {
+    color: #FFD700;
+    margin: 0.5rem 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .search-bar {
+        display: none;
+    }
+
+    .brands-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+}
