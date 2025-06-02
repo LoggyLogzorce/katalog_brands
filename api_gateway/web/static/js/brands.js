@@ -5,8 +5,6 @@ fetch('/api/brands', {
     .then(res => res.json())
     .then(brands => {
         const container = document.getElementById('brands-list');
-        console.log(brands)
-        console.log(brands.length)
         if (brands.length === 0) {
             container.innerHTML = '<p style="padding:20px">Брендов не найдено.</p>';
             return;

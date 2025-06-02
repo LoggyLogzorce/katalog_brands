@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
 
 type AuthInfo struct {
-	UserID string `json:"userID"`
-	Role   string `json:"role"`
+	UserID json.Number `json:"userID"`
+	Role   string      `json:"role"`
 }
 
 // AuthMiddleware Мидлвэр для проверки JWT и роли
@@ -74,14 +75,18 @@ func AuthMiddleware(requiredRole []string) gin.HandlerFunc {
 
 func OptionalAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
 		role := "guest" // по-умолчанию
-		userID := ""
+		var userID json.Number
 
-		if strings.HasPrefix(authHeader, "Bearer ") {
-			token := strings.TrimPrefix(authHeader, "Bearer ")
+		authCookie, err := c.Cookie("access_token")
+		if err != nil {
+			log.Println("Ошибка получения access_token")
+		}
+
+		if strings.HasPrefix(authCookie, "Bearer ") {
+			token := strings.TrimPrefix(authCookie, "Bearer ")
 			// запрос к auth-сервису
-			req, _ := http.NewRequest("GET", "http://localhost:8081/validate", nil)
+			req, _ := http.NewRequest("GET", "http://localhost:8081/api/validate", nil)
 			req.Header.Set("Authorization", "Bearer "+token)
 			if resp, err := http.DefaultClient.Do(req); err == nil && resp.StatusCode == http.StatusOK {
 				defer resp.Body.Close()

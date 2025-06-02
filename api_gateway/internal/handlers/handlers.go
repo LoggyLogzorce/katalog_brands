@@ -5,15 +5,9 @@ import (
 	"net/http"
 )
 
-type Brand struct {
-	ID            uint64
-	Name          string
-	AverageRating float64
-}
-
 func HomePage(c *gin.Context) {
 	role, _ := c.Get("role")
-	c.HTML(200, "index.html", gin.H{
+	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title": "Главная",
 		"Role":  role,
 	})
@@ -27,12 +21,22 @@ func BrandsHandler(c *gin.Context) {
 	})
 }
 
-func GetBrands(c *gin.Context) {
-	brands := []Brand{
-		{1, "Dior", 4.5},
-		{2, "Letuale", 4.3},
-		{3, "Cosmostars", 5.0},
-	}
+func CategoriesHandler(c *gin.Context) {
+	role, _ := c.Get("role")
+	c.HTML(http.StatusOK, "categories.html", gin.H{
+		"title": "Категории",
+		"Role":  role,
+	})
+}
 
-	c.JSON(200, brands)
+func AuthHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "auth.html", gin.H{
+		"title": "Вход",
+	})
+}
+
+func RegisterHandler(c *gin.Context) {
+	c.HTML(http.StatusOK, "register.html", gin.H{
+		"title": "Регистрация",
+	})
 }
