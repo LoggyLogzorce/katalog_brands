@@ -6,12 +6,14 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
 type AuthInfo struct {
-	UserID json.Number `json:"userID"`
-	Role   string      `json:"role"`
+	UserID uint64 `json:"userID"`
+	Role   string `json:"role"`
+	Name   string `json:"name"`
 }
 
 // AuthMiddleware Мидлвэр для проверки JWT и роли
@@ -68,6 +70,7 @@ func AuthMiddleware(requiredRole []string) gin.HandlerFunc {
 
 		c.Set("userID", info.UserID)
 		c.Set("role", info.Role)
+		c.Set("name", info.Name)
 
 		c.Next()
 	}
@@ -76,7 +79,8 @@ func AuthMiddleware(requiredRole []string) gin.HandlerFunc {
 func OptionalAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role := "guest" // по-умолчанию
-		var userID json.Number
+		name := "U"
+		var userID uint64
 
 		authCookie, err := c.Cookie("access_token")
 		if err != nil {
@@ -86,7 +90,7 @@ func OptionalAuthMiddleware() gin.HandlerFunc {
 		if strings.HasPrefix(authCookie, "Bearer ") {
 			token := strings.TrimPrefix(authCookie, "Bearer ")
 			// запрос к auth-сервису
-			req, _ := http.NewRequest("GET", "http://localhost:8081/api/validate", nil)
+			req, _ := http.NewRequest("GET", "http://localhost:8081/api/v1/validate", nil)
 			req.Header.Set("Authorization", "Bearer "+token)
 			if resp, err := http.DefaultClient.Do(req); err == nil && resp.StatusCode == http.StatusOK {
 				defer resp.Body.Close()
@@ -94,13 +98,16 @@ func OptionalAuthMiddleware() gin.HandlerFunc {
 				if body, _ := io.ReadAll(resp.Body); json.Unmarshal(body, &info) == nil {
 					role = info.Role
 					userID = info.UserID
+					name = info.Name
 				}
 			}
 		}
 
+		userIDStr := strconv.FormatUint(userID, 10)
 		// сохраняем в контекст и пропускаем
 		c.Set("role", role)
-		c.Set("userID", userID)
+		c.Set("name", name)
+		c.Set("userID", userIDStr)
 		c.Next()
 	}
 }

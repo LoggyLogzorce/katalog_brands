@@ -24,9 +24,11 @@ func Validate(c *gin.Context) {
 	claims := token.Claims.(jwt.MapClaims)
 	userID := claims["userID"]
 	role := claims["role"]
+	name := claims["name"]
 
 	c.JSON(200, gin.H{
 		"userID": userID,
 		"role":   role,
+		"name":   name,
 	})
 }

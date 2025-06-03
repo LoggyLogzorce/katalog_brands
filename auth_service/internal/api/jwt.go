@@ -15,6 +15,7 @@ func GenerateJWT(user *models.User) (string, error) {
 	claims := jwt.MapClaims{
 		"userID": user.ID,
 		"role":   user.Role,
+		"name":   user.Name,
 		"iat":    time.Now().Unix(),
 		"exp":    time.Now().Add(15 * time.Minute).Unix(), // срок действия 24 часа
 	}

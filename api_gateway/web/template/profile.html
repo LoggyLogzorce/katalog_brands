@@ -1,0 +1,197 @@
+{{ template "base" . }}
+    <link href="/static/css/header.css" rel="stylesheet">
+    <link href="/static/css/profile.css" rel="stylesheet">
+</head>
+<body>
+<!-- Шапка -->
+{{ template "header" . }}
+
+<!-- Основной контент -->
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="profile-title">Мой профиль</h1>
+        <a href="/edit-profile" class="btn btn-outline">
+            <i class="fas fa-edit"></i> Редактировать профиль
+        </a>
+    </div>
+
+    <div class="profile-content">
+        <!-- Блок с информацией о пользователе -->
+        <div class="user-card">
+            <div class="user-info-header">
+                <h2 class="user-name">Анна Петрова</h2>
+                <p class="user-email">anna.petrova@example.com</p>
+            </div>
+
+            <div class="user-stats">
+                <div class="stat-item">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Отзывов</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">Избранное</div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn btn-primary">
+                    <i class="fas fa-lock"></i> Сменить пароль
+                </button>
+                {{ if eq .Role "user" }}
+                <button class="btn btn-outline">
+                    <i class="fas fa-shopping-cart"></i> Стать creator`ом
+                </button>
+                {{ end }}
+            </div>
+        </div>
+
+        <!-- Основная колонка -->
+        <div>
+            <!-- Избранные товары -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Избранные товары</h2>
+                    <a href="/favorites" class="view-all">Показать все</a>
+                </div>
+
+                <div class="products-grid">
+                    <!-- Товар 1 -->
+                    <div class="product-card">
+                        <div style="position: relative;">
+                            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Часы" class="product-image">
+                            <span class="badge">-15%</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Наручные часы Casio</h3>
+                            <div class="product-price">12 490 ₽ <span style="text-decoration: line-through; color: #999; font-size: 0.9rem;">14 990 ₽</span></div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="fas fa-heart" style="color: #FFB6C1;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Товар 2 -->
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Сумка" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">Кожаная сумка</h3>
+                            <div class="product-price">8 990 ₽</div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="fas fa-heart" style="color: #FFB6C1;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Товар 3 -->
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Наушники" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">Беспроводные наушники</h3>
+                            <div class="product-price">7 490 ₽</div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="fas fa-heart" style="color: #FFB6C1;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Товар 4 -->
+                    <div class="product-card">
+                        <div style="position: relative;">
+                            <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Фотоаппарат" class="product-image">
+                            <span class="badge">Хит</span>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Зеркальный фотоаппарат</h3>
+                            <div class="product-price">45 990 ₽</div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="fas fa-heart" style="color: #FFB6C1;"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- История просмотра -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">История просмотров</h2>
+                    <a href="/view_history" class="view-all">Показать все</a>
+                </div>
+
+                <div class="products-grid">
+                    <!-- Товар 1 -->
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Кроссовки" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">Спортивные кроссовки</h3>
+                            <div class="product-price">5 990 ₽</div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="far fa-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Товар 2 -->
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Смартфон" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">Смартфон Samsung</h3>
+                            <div class="product-price">34 990 ₽</div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="far fa-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Товар 3 -->
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1504274066651-8d31a536b11a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Платье" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">Вечернее платье</h3>
+                            <div class="product-price">9 490 ₽</div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="far fa-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Товар 4 -->
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Кроссовки" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">Кроссовки Nike</h3>
+                            <div class="product-price">8 790 ₽</div>
+                            <div class="product-actions">
+                                <div class="action-btn">
+                                    <i class="far fa-heart"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Подвал -->
+{{ template "footer" . }}
+
+<script src="/static/js/profile.js"></script>
+</body>
+</html>

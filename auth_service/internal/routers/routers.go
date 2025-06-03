@@ -8,7 +8,7 @@ import (
 func SetRouters() *gin.Engine {
 	r := gin.Default()
 
-	apiGroup := r.Group("/api")
+	apiGroup := r.Group("/api/v1")
 	{
 		apiGroup.POST("/register", api.Register)
 		apiGroup.POST("/login", api.Login)

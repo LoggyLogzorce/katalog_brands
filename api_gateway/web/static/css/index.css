@@ -17,19 +17,11 @@ body {
     text-decoration: none;
 }
 
-.search-bar {
-    flex: 0 1 500px;
-    padding: 0.8rem;
-    border: 1px solid #F5F5DC;
-    border-radius: 25px;
-    margin: 0 2rem;
-}
-
 /* Герой-секция */
 .hero {
     margin-top: 80px;
     padding: 4rem 5%;
-    background: linear-gradient(rgba(255,182,193,0.1), rgba(245,245,220,0.1)),
+    /*background: linear-gradient(rgba(255,182,193,0.1), rgba(245,245,220,0.1)),*/
     url('hero-bg.jpg') center/cover;
     text-align: center;
 }

@@ -1,3 +1,11 @@
+.search-bar {
+    flex: 0 1 500px;
+    padding: 0.8rem;
+    border: 1px solid #F5F5DC;
+    border-radius: 25px;
+    margin: 0 2rem;
+}
+
 /* Шапка */
 .header {
     display: flex;
@@ -6,49 +14,81 @@
     padding: 1rem 5%;
     background: #FFF;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: fixed;
-    width: 100%;
+    position: sticky;
     top: 0;
     z-index: 1000;
 }
 
-.header .header-icons a {
-    margin-left: 16px;          /* отступ между иконками */
-    color: #333;                /* основной цвет текста */
-    text-decoration: none;      /* без подчёркивания */
-    font-weight: 500;           /* чуть жирнее */
-    transition: color 0.2s;     /* мягкий переход цвета */
-}
-
-.header .header-icons a:hover {
-    color: #007bff;             /* цвет при наведении */
-}
-
-.header .header-icons a.icon {
-    display: inline-flex;
+.logo {
+    font-size: 1.5rem;
+    color: #FFB6C1;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
     align-items: center;
 }
 
-
-
-.header .header-icons a.icon::before {
-    content: attr(data-icon);   /* если используешь data-icon вместо эмодзи */
-    margin-right: 6px;
+.logo i {
+    margin-right: 10px;
+    font-size: 1.8rem;
 }
 
-/* навигация */
 .nav-list {
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
 }
+
 .nav-list li {
     position: relative;
     margin-right: 24px;
 }
+
 .nav-list a {
     text-decoration: none;
     color: #333;
     padding: 8px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.nav-list a:hover {
+    color: #FFB6C1;
+}
+
+.nav-list a.active {
+    color: #FFB6C1;
+    border-bottom: 2px solid #FFB6C1;
+}
+
+.header-icons {
+    display: flex;
+    align-items: center;
+}
+
+.header-icons a {
+    margin-left: 16px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.header-icons a:hover {
+    color: #FFB6C1;
+}
+
+.header-icons .profile-icon {
+    background: #FFB6C1;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
 }

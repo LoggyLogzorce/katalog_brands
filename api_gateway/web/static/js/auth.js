@@ -8,7 +8,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     console.log('Вход с данными:', {email, password});
 
     // В реальном приложении здесь будет AJAX-запрос к серверу
-    fetch('/api/login', {
+    fetch('/api/v1/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

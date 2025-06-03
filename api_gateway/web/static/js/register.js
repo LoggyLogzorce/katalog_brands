@@ -101,7 +101,7 @@ registerForm.addEventListener('submit', function(e) {
     // Эмуляция отправки данных на сервер
     console.log('Регистрация с данными:', formData);
 
-    fetch('/api/register', {
+    fetch('/api/v1/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

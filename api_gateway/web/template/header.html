@@ -1,14 +1,14 @@
 {{ define "header" }}
 <header class="header">
-    <a href="/" class="logo">CosmoBrands</a>
+    <a href="/" class="logo">
+        <i class="fas fa-heart"></i>CosmoBrands
+    </a>
 
-    <nav class="nav">
-        <ul class="nav-list">
-            <li><a href="/">Главная</a></li>
-            <li><a href="/brands">Бренды</a></li>
-            <li><a href="/categories">Категории</a></li>
-        </ul>
-    </nav>
+    <ul class="nav-list">
+        <li><a href="/">Главная</a></li>
+        <li><a href="/brands">Бренды</a></li>
+        <li><a href="/categories">Категории</a></li>
+    </ul>
 
     <label>
         <input type="text" class="search-bar" placeholder="Поиск брендов и товаров...">
@@ -16,10 +16,10 @@
 
     <div class="header-icons">
         {{ if eq .Role "user" }}
-        <a href="/profile" class="icon">👤 Профиль</a>
+        <a href="/profile" class="profile-icon">{{ .Name }}</a>
         {{ else if eq .Role "creator" }}
         <a href="/brands/edit" class="icon">✏️ Редактировать бренды</a>
-        <a href="/profile" class="icon">👤 Профиль</a>
+        <a href="/profile" class="profile-icon">{{ .Name }}</a>
         {{ else }}
         <a href="/auth" class="icon">👤 Войти</a>
         {{ end }}

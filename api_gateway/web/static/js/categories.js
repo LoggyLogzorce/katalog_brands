@@ -1,4 +1,4 @@
-fetch('/api/categories', {
+fetch('/api/v1/categories', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
 })
