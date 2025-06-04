@@ -9,7 +9,7 @@ import (
 )
 
 func BrandsHandler(c *gin.Context) {
-	status, _, body, err := proxyTo(c, "http://localhost:8083")
+	status, _, body, err := proxyTo(c, "http://localhost:8084", "", nil)
 	if err != nil {
 		log.Println("BrandsHandler: ошибка вызова Brand Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Brand Service недоступен"})

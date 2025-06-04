@@ -17,6 +17,7 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/brands", middleware.OptionalAuthMiddleware(), handlers.BrandsHandler)
 	r.GET("/categories", middleware.OptionalAuthMiddleware(), handlers.CategoriesHandler)
 	r.GET("/profile", middleware.OptionalAuthMiddleware(), handlers.ProfileHandler)
+	r.NoRoute(handlers.PageNotFound)
 
 	return r
 }

@@ -1,0 +1,82 @@
+{{ template "base" . }}
+    <link href="/static/css/404.css" rel="stylesheet">
+</head>
+<body>
+<!-- Шапка -->
+{{ template "header" . }}
+
+<!-- Основной контент -->
+<main class="error-container">
+    <div class="error-content">
+        <div class="error-number floating">404</div>
+        <h1 class="error-title">Упс! Страница не найдена</h1>
+        <p class="error-text">
+            Похоже, вы пытаетесь найти страницу, которой не существует. Возможно, она была перемещена или удалена.
+            Но не волнуйтесь! Мы поможем вам вернуться на верный путь.
+        </p>
+
+        <div class="error-image floating">
+            <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Забавный кот">
+        </div>
+
+        <div class="search-box">
+            <input type="text" placeholder="Что вы ищете?">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-home"></i> Вернуться на главную
+            </a>
+        </div>
+    </div>
+</main>
+
+<!-- Подвал -->
+{{ template "footer" . }}
+
+<script>
+    // Анимация для элементов при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        // Добавляем задержку для анимации элементов
+        setTimeout(() => {
+            document.querySelector('.error-title').style.opacity = '1';
+            document.querySelector('.error-text').style.opacity = '1';
+            document.querySelector('.error-image').style.opacity = '1';
+            document.querySelector('.search-box').style.opacity = '1';
+            document.querySelector('.action-buttons').style.opacity = '1';
+        }, 300);
+
+        // Анимация при наведении на кнопки
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+            });
+
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Обработка поиска
+        const searchButton = document.querySelector('.search-box button');
+        const searchInput = document.querySelector('.search-box input');
+
+        searchButton.addEventListener('click', function() {
+            if (searchInput.value.trim() !== '') {
+                alert(`Поиск: "${searchInput.value}"\nК сожалению, в демо-версии поиск не работает.`);
+            } else {
+                searchInput.focus();
+            }
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+    });
+</script>
+</body>
+</html>

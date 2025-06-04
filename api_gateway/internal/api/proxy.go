@@ -2,14 +2,23 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // Проксирование запроса к микросервису
-func proxyTo(c *gin.Context, target string) (int, http.Header, []byte, error) {
+func proxyTo(c *gin.Context, target string, requestURI string, body io.Reader) (int, http.Header, []byte, error) {
+	if body == nil {
+		body = c.Request.Body
+	}
+
+	if requestURI == "" {
+		requestURI = c.Request.RequestURI
+	}
 	client := &http.Client{}
-	req, _ := http.NewRequest(c.Request.Method, target+c.Request.RequestURI, c.Request.Body)
+	req, _ := http.NewRequest(c.Request.Method, target+requestURI, body)
 	req.Header = c.Request.Header
 
 	resp, err := client.Do(req)
@@ -19,6 +28,9 @@ func proxyTo(c *gin.Context, target string) (int, http.Header, []byte, error) {
 	defer resp.Body.Close()
 
 	for key, values := range resp.Header {
+		if strings.EqualFold(key, "Content-Length") {
+			continue
+		}
 		for _, v := range values {
 			c.Writer.Header().Add(key, v)
 		}

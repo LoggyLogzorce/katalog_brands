@@ -9,7 +9,7 @@ import (
 )
 
 func CategoryHandler(c *gin.Context) {
-	status, _, body, err := proxyTo(c, "http://localhost:8084")
+	status, _, body, err := proxyTo(c, "http://localhost:8083", "", nil)
 	if err != nil {
 		log.Println("CategoryHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
