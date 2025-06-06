@@ -22,12 +22,12 @@ func CategoryHandler(c *gin.Context) {
 		return
 	}
 
-	var categories []models.Categories
+	var categories []models.Category
 	if err = json.Unmarshal(body, &categories); err != nil {
 		log.Println("CategoryHandler: ошибка разбора JSON от Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа Product Service"})
 		return
 	}
 
-	c.JSON(status, gin.H{"brands": categories})
+	c.JSON(status, categories)
 }

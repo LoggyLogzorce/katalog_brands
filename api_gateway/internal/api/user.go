@@ -4,7 +4,6 @@ import (
 	"api_gateway/internal/models"
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -52,8 +51,6 @@ func ProfileHandler(c *gin.Context) {
 		Favorite:    favoritesID,
 		ViewHistory: viewsHistoryID,
 	}
-
-	fmt.Println(productsID)
 
 	productsIDJson, err := json.Marshal(productsID)
 	if err != nil {

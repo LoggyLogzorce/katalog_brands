@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon.classList.add('far');
                     icon.style.color = '';
                 }
-            } else if (this.querySelector('.fa-shopping-cart')) {
-                alert('Товар добавлен в корзину!');
             }
         });
     });
@@ -37,13 +35,18 @@ document.addEventListener('DOMContentLoaded', function() {
 function createProductCard(item) {
     const div = document.createElement('div');
     div.className = 'product-card';
-    let badgeHTML = '';
-    if (item.badge) {
-        badgeHTML = `<span class="badge">${item.badge}</span>`;
-    }
+    const badgeHTML = isNewProduct(item.created_at)
+        ? '<span class="badge">Новинка</span>'
+        : '';
+
+    // Собираем массив URL-ов
+    const images = item.product_urls.map(obj => obj.url);
+    const firstImage = images[0] || '';
+
     div.innerHTML = `
         <div style="position: relative;">
-          <img src="${item.imageURL}" alt="${item.name}" class="product-image">
+          <img src="/static/${firstImage}" alt="${item.name}" class="product-image"
+             data-images='${JSON.stringify(images)}' data-current-index="0">
           ${badgeHTML}
         </div>
         <div class="product-info">
@@ -53,7 +56,7 @@ function createProductCard(item) {
           </div>
           <div class="product-actions">
             <div class="action-btn">
-              <i class="${item.isFavorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
+              <i class="${item.is_favorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
             </div>
           </div>
         </div>
@@ -74,16 +77,27 @@ document.addEventListener('DOMContentLoaded', () => {
             // Заполняем информацию о пользователе
             document.getElementById('user-name').textContent = data.user_data.name;
             document.getElementById('user-email').textContent = data.user_data.email;
-            document.getElementById('stat-reviews').textContent = data.reviewsCount || 5;
-            document.getElementById('stat-favorites').textContent = data.favorites.length || 0;
-            if (data.user_data.role === 'user') {
-                document.getElementById('become-creator-btn').classList.remove('hidden');
+
+            if (data.view_history != null) {
+                document.getElementById('stat-view-history').textContent = data.view_history.length || 0;
+            } else {
+                document.getElementById('stat-view-history').textContent = 0;
             }
+
+            if (data.favorites != null) {
+                document.getElementById('stat-favorites').textContent = data.favorites.length || 0;
+            } else {
+                document.getElementById('stat-favorites').textContent = 0;
+            }
+
+            // if (data.user_data.role === 'user') {
+            //     document.getElementById('become-creator-btn').classList.remove('hidden');
+            // }
 
             // Подставляем избранные товары
             const favGrid = document.getElementById('favorites-grid');
             favGrid.innerHTML = '';
-            if (Array.isArray(data.favorites) && data.favorites.length) {
+            if (Array.isArray(data.favorites) && data.favorites != null) {
                 data.favorites.forEach(item => {
                     const card = createProductCard(item);
                     favGrid.appendChild(card);
@@ -103,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 histGrid.innerHTML = '<p style="padding: 20px">Нет истории просмотров.</p>';
             }
+            attachItemEventListeners();
         })
         .catch(err => {
             console.error(err);

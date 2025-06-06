@@ -18,7 +18,6 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
         if (r.error) {
             alert(r.error);
         } else {
-            alert('Вход выполнен успешно!');
             window.location.href = '/';
         }
     });

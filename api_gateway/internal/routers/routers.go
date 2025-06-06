@@ -17,7 +17,9 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/brands", middleware.OptionalAuthMiddleware(), handlers.BrandsHandler)
 	r.GET("/categories", middleware.OptionalAuthMiddleware(), handlers.CategoriesHandler)
 	r.GET("/profile", middleware.OptionalAuthMiddleware(), handlers.ProfileHandler)
-	r.NoRoute(handlers.PageNotFound)
+	r.GET("/favorites", middleware.OptionalAuthMiddleware(), handlers.FavoriteHandler)
+	r.GET("/view-history", middleware.OptionalAuthMiddleware(), handlers.ViewHistoryHandler)
+	r.NoRoute(middleware.OptionalAuthMiddleware(), handlers.PageNotFound)
 
 	return r
 }
@@ -30,6 +32,8 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 		apiGroup.POST("/login", api.LoginHandler)
 		apiGroup.POST("/register", api.RegisterHandler)
 		apiGroup.GET("/profile", middleware.OptionalAuthMiddleware(), api.ProfileHandler)
+		apiGroup.GET("/favorites", middleware.OptionalAuthMiddleware(), api.FavoriteHandler)
+		apiGroup.GET("/view-history", middleware.OptionalAuthMiddleware(), api.ViewHistoryHandler)
 		apiGroup.PUT("/update_role", middleware.OptionalAuthMiddleware(), api.UpdateRoleHandler)
 	}
 

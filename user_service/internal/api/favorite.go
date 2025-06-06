@@ -14,7 +14,5 @@ func GetFavorites(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"favorites": favorites,
-	})
+	c.JSON(200, favorites)
 }

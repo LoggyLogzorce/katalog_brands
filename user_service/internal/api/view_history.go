@@ -14,7 +14,5 @@ func GetViewHistory(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"view_history": history,
-	})
+	c.JSON(200, history)
 }

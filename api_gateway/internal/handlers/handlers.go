@@ -61,6 +61,10 @@ func RegisterHandler(c *gin.Context) {
 
 func ProfileHandler(c *gin.Context) {
 	role := c.GetString("role")
+	if role == "guest" {
+		AuthHandler(c)
+		return
+	}
 	name := c.GetString("name")
 	var first string
 	if len(name) > 0 {
@@ -68,6 +72,42 @@ func ProfileHandler(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "profile.html", gin.H{
 		"title": "Профиль",
+		"Role":  role,
+		"Name":  first,
+	})
+}
+
+func FavoriteHandler(c *gin.Context) {
+	role := c.GetString("role")
+	if role == "guest" {
+		AuthHandler(c)
+		return
+	}
+	name := c.GetString("name")
+	var first string
+	if len(name) > 0 {
+		first = string([]rune(name)[0])
+	}
+	c.HTML(http.StatusOK, "favorite.html", gin.H{
+		"title": "Избранное",
+		"Role":  role,
+		"Name":  first,
+	})
+}
+
+func ViewHistoryHandler(c *gin.Context) {
+	role := c.GetString("role")
+	if role == "guest" {
+		AuthHandler(c)
+		return
+	}
+	name := c.GetString("name")
+	var first string
+	if len(name) > 0 {
+		first = string([]rune(name)[0])
+	}
+	c.HTML(http.StatusOK, "view_history.html", gin.H{
+		"title": "История просмотра",
 		"Role":  role,
 		"Name":  first,
 	})

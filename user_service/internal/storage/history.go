@@ -7,7 +7,7 @@ import (
 
 func SelectHistory(userID string, limit int) ([]models.History, error) {
 	var history []models.History
-	err := db.DB().Where("user_id=?", userID).Select("user_id", "product_id", "viewed_at").Limit(limit).Find(&history).Error
+	err := db.DB().Where("user_id=?", userID).Order("viewed_at DESC").Limit(limit).Find(&history).Error
 	if err != nil {
 		return nil, err
 	}

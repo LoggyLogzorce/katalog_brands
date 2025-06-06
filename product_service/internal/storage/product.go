@@ -8,11 +8,10 @@ import (
 func SelectProduct(data []uint64) ([]models.Product, error) {
 	var products []models.Product
 
-	//for _, v := range data {
-	//	arrId = append(arrId, v.ID)
-	//}
-
-	if err := db.DB().Find(&products, data).Error; err != nil {
+	if err := db.DB().
+		Preload("ProductUrls").
+		Preload("Category").
+		Find(&products, data).Error; err != nil {
 		return nil, err
 	}
 

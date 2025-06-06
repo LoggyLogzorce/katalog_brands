@@ -1,0 +1,32 @@
+{{ template "base" . }}
+<link href="/static/css/favorite.css" rel="stylesheet">
+</head>
+<body>
+<!-- Шапка -->
+{{ template "header" . }}
+
+<!-- Основной контент -->
+<div class="favorites-container">
+    <div class="favorites-header">
+        <h1 class="favorites-title">Избранные товары</h1>
+    </div>
+
+    <div class="favorites-actions">
+        <button id="share-all-btn" class="btn btn-primary">
+            <i class="fas fa-share-alt"></i> Поделиться списком
+        </button>
+        <button id="clear-all-btn" class="btn btn-outline">
+            <i class="fas fa-trash-alt"></i> Очистить избранное
+        </button>
+    </div>
+
+    <div id="favorites-list" class="favorites-list">
+        <p id="loading-text">Загрузка…</p>
+    </div>
+</div>
+
+<!-- Подвал -->
+{{ template "footer" . }}
+
+<script src="/static/js/favorite.js"></script>
+<script src="/static/js/fav_history.js"></script>

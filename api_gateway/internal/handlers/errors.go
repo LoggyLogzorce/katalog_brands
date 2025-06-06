@@ -6,13 +6,16 @@ import (
 )
 
 func PageNotFound(c *gin.Context) {
+	role := c.GetString("role")
+	name := c.GetString("name")
+	var first string
+	if len(name) > 0 {
+		first = string([]rune(name)[0])
+	}
 	c.HTML(http.StatusNotFound, "404.html", gin.H{
-		"path": c.Request.URL.Path,
-	})
-}
-
-func PageForbidden(c *gin.Context) {
-	c.HTML(http.StatusForbidden, "403.html", gin.H{
-		"path": c.Request.URL.Path,
+		"title": "Не найдено",
+		"path":  c.Request.URL.Path,
+		"Role":  role,
+		"Name":  first,
 	})
 }

@@ -12,7 +12,7 @@ func SetRouters() *gin.Engine {
 	{
 		apiGroup.GET("/profile", api.GetProfileInfo)
 		apiGroup.GET("/favorites", api.GetFavorites)
-		apiGroup.GET("/view_history", api.GetViewHistory)
+		apiGroup.GET("/view-history", api.GetViewHistory)
 		apiGroup.PUT("/update_role", api.UpdateRole)
 	}
 

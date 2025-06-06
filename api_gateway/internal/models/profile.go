@@ -10,16 +10,8 @@ type Profile struct {
 		Role      string    `json:"role"`
 		CreatedAt time.Time `json:"created_at"`
 	} `json:"user_data"`
-	Favorites []struct {
-		UserID    uint64    `json:"user_id"`
-		ProductID uint64    `json:"product_id"`
-		AddedAt   time.Time `json:"added_at"`
-	} `json:"favorites"`
-	ViewHistory []struct {
-		UserId    uint64    `json:"user_id"`
-		ProductID uint64    `json:"product_id"`
-		ViewedAt  time.Time `json:"viewed_at"`
-	} `json:"view_history"`
+	Favorites   []Favorite    `json:"favorites"`
+	ViewHistory []ViewHistory `json:"view_history"`
 }
 
 type ProfileResponse struct {

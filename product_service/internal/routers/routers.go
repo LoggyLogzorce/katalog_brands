@@ -11,6 +11,7 @@ func SetRouters() *gin.Engine {
 	apiGroup := r.Group("/api/v1")
 	{
 		apiGroup.GET("/products", api.GetProduct)
+		apiGroup.GET("/categories", api.GetCategories)
 	}
 
 	return r

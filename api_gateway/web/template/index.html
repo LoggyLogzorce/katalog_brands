@@ -1,5 +1,5 @@
 {{ template "base" . }}
-    <link href="/static/css/index.css" rel="stylesheet">
+<link href="/static/css/index.css" rel="stylesheet">
 </head>
 <body>
 
@@ -17,44 +17,23 @@
 <!-- Популярные бренды -->
 <section class="section">
     <h2 class="section-title">Популярное сейчас</h2>
-    <div class="brands-grid">
-        <!-- Пример карточки бренда -->
-        <div class="brand-card">
-            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
-            <h3>LuxCare</h3>
-            <div class="rating">★★★★☆ (4.2)</div>
-            <p>Премиальный уход за кожей</p>
-            <button class="btn btn-primary">Подробнее</button>
-        </div>
-        <div class="brand-card">
-            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
-            <h3>LuxCare</h3>
-            <div class="rating">★★★★☆ (4.2)</div>
-            <p>Премиальный уход за кожей</p>
-            <button class="btn btn-primary">Подробнее</button>
-        </div>
-        <div class="brand-card">
-            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
-            <h3>LuxCare</h3>
-            <div class="rating">★★★★☆ (4.2)</div>
-            <p>Премиальный уход за кожей</p>
-            <button class="btn btn-primary">Подробнее</button>
-        </div>
-        <div class="brand-card">
-            <img src="brand-logo.jpg" alt="LuxCare" class="brand-logo">
-            <h3>LuxCare</h3>
-            <div class="rating">★★★★☆ (4.2)</div>
-            <p>Премиальный уход за кожей</p>
-            <button class="btn btn-primary">Подробнее</button>
-        </div>
+    <div id="popular-brands-grid" class="brands-grid">
+        <!-- Статика пока скрывается через CSS, чтобы не мешать загрузке -->
+        <style>
+            #popular-brands-grid .brand-card { display: none; }
+        </style>
     </div>
 </section>
 
 <!-- Новые бренды -->
 <section class="section">
-    <h2 class="section-title">Новинки</h2>
-    <div class="brands-grid">
-        <!-- Карточки новых брендов -->
+    <h2 class="section-title">Новые бренды</h2>
+    <div id="new-brands-grid" class="brands-grid">
+        <p id="new-loading">Загрузка…</p>
     </div>
 </section>
+
 {{ template "footer" . }}
+
+<script src="/static/js/index.js"></script>
+

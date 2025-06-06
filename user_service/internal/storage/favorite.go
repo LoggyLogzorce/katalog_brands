@@ -7,7 +7,7 @@ import (
 
 func SelectFavorite(userID string, limit int) ([]models.Favorite, error) {
 	var favorites []models.Favorite
-	err := db.DB().Where("user_id=?", userID).Select("user_id", "product_id", "added_at").Limit(limit).Find(&favorites).Error
+	err := db.DB().Where("user_id=?", userID).Order("added_at DESC").Limit(limit).Find(&favorites).Error
 	if err != nil {
 		return nil, err
 	}
