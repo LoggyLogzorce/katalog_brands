@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const listContainer = document.getElementById('favorites-list');
 
     // Создаёт DOM-элемент для карточки товара
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="action-btn share-btn" data-product-id="${item.product_id}" data-brand-id="${item.brand_id}">
                     <i class="fas fa-share-alt"></i>
                 </div>
-                <div class="action-btn remove-btn" >
+                <div class="action-btn remove-btn" data-id="${item.product_id}" data-url="favorites">
                     <i class="fas fa-trash-alt"></i>
                 </div>
             </div>
@@ -48,6 +48,27 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
         return div;
     }
+
+    // Удаление одного товара
+    document.querySelectorAll('.remove-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const itemDiv = this.closest('.favorites-item');
+            itemDiv.style.opacity = '0';
+            setTimeout(async () => {
+                itemDiv.style.display = 'none';
+                const productId = button.dataset.id;
+                try {
+                    const res = await fetch(`/api/v1/favorites/${productId}`, {
+                        method: 'DELETE',
+                    });
+                    if (!res.ok) throw new Error();
+                } catch {
+                    const error = new Error('Не удалось обновить избранное');
+                    console.error(error);
+                }
+            }, 300);
+        });
+    });
 
     // Загрузка данных и рендер карточек
     fetch('/api/v1/favorites', {
@@ -88,14 +109,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     // Кнопка "Поделиться списком"
-    document.getElementById('share-all-btn').addEventListener('click', function() {
+    document.getElementById('share-all-btn').addEventListener('click', function () {
         alert('Список избранных товаров отправлен!');
     });
 
     // Кнопка "Очистить избранное"
-    document.getElementById('clear-all-btn').addEventListener('click', function() {
+    document.getElementById('clear-all-btn').addEventListener('click', function () {
         if (confirm('Вы уверены, что хотите очистить всё избранное?')) {
-            listContainer.innerHTML = `
+            setTimeout( async () => {
+                try {
+                    const res = await fetch(`/api/v1/favorites`, {
+                        method: 'DELETE',
+                    });
+                    if (!res.ok) throw new Error();
+                    listContainer.innerHTML = `
           <div class="empty-favorites">
             <div class="empty-icon"><i class="far fa-heart"></i></div>
             <h2 class="empty-title">Ваше избранное пусто</h2>
@@ -108,10 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
             </a>
           </div>
         `;
-            // Обновляем счётчик в шапке, если он есть:
-            const countEl = document.querySelector('.favorites-count');
-            if (countEl) countEl.textContent = '0';
-            // Дополнительно: отправить запрос на очистку списка на сервере
+                } catch {
+                    alert('Не удалось очистить избранное.\n Повторите попытку позже.');
+                    const error = new Error('Не удалось очистить избранное');
+                    console.error(error);
+                }
+            }, 300);
         }
     });
 });

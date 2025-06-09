@@ -17,3 +17,17 @@ func SelectProduct(data []uint64) ([]models.Product, error) {
 
 	return products, nil
 }
+
+func SelectProductsInCategory(categoryID string) ([]models.Product, error) {
+	var products []models.Product
+	err := db.DB().
+		Preload("ProductUrls").
+		Preload("Category").
+		Where("category_id=?", categoryID).
+		Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
+}

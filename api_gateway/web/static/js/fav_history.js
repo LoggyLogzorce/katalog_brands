@@ -14,11 +14,22 @@ function attachItemEventListeners() {
     // Удаление одного товара
     document.querySelectorAll('.remove-btn').forEach(button => {
         button.addEventListener('click', function() {
-            const itemDiv = this.closest('.favorites-item');
+            const url = button.dataset.url;
+            const cls = url === 'view-history' ? '.view-history-item' : '.favorites-item';
+            const itemDiv = this.closest(cls);
             itemDiv.style.opacity = '0';
-            setTimeout(() => {
+            setTimeout(async () => {
                 itemDiv.style.display = 'none';
-                // Дополнительно: отправить запрос на удаление из избранного
+                const productId = button.dataset.id;
+                try {
+                    const res = await fetch(`/api/v1/${url}/${productId}`, {
+                        method: 'DELETE',
+                    });
+                    if (!res.ok) throw new Error();
+                } catch {
+                    const error = new Error('Не удалось обновить избранное');
+                    console.error(error);
+                }
             }, 300);
         });
     });

@@ -16,8 +16,13 @@ func SelectUser(userID, role string) (models.User, error) {
 }
 
 func UpdateRoleUser(userID, role string) error {
-	return db.DB().Model(&models.User{}).
+	err := db.DB().Model(&models.User{}).
 		Where("id = ?", userID).
 		Update("role", role).
 		Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

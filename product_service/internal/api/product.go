@@ -1,8 +1,9 @@
 package api
 
 import (
-	"fmt"
+	"errors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"log"
 	"product_service/internal/models"
 	"product_service/internal/storage"
@@ -75,8 +76,40 @@ func GetProduct(c *gin.Context) {
 		resp.ViewHistory = productsViewHistory
 	}
 
-	fmt.Println(resp)
-
 	c.JSON(200, resp)
 
+}
+
+func GetProductInCategory(c *gin.Context) {
+	var data Request
+	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
+		log.Println("GetProduct: ошибка получения данных из запроса", err)
+		return
+	}
+
+	categoryID := c.Param("id")
+
+	products, err := storage.SelectProductsInCategory(categoryID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Println("GetProductInCategory: ошибка получения данных об товаров из категории", categoryID, err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об истории просмотра"})
+		return
+	}
+
+	// var productsID []uint64
+
+	for i := range products {
+		for _, v := range data.Favorite {
+			if products[i].ID == v {
+				products[i].IsFavorite = true
+			}
+		}
+		// productsID = append(productsID, products[i].ID)
+		products[i].Rating.AvgRating = 3.5
+		products[i].Rating.CountReview = 100
+	}
+
+	// запрос к review service на получение среднего рейтинга и количества отзывов
+
+	c.JSON(200, products)
 }

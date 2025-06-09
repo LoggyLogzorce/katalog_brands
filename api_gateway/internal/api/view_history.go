@@ -39,7 +39,7 @@ func ViewHistoryHandler(c *gin.Context) {
 		viewHistoryID = append(viewHistoryID, v.ProductID)
 	}
 
-	productsID := models.ProductRequest{
+	productsID := models.ProfileProductRequest{
 		ViewHistory: viewHistoryID,
 	}
 
@@ -63,7 +63,7 @@ func ViewHistoryHandler(c *gin.Context) {
 		return
 	}
 
-	var products models.ProductResponse
+	var products models.ProfileProductResponse
 	if err = json.Unmarshal(body, &products); err != nil {
 		log.Println("ViewHistoryHandler: ошибка разбора JSON от Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа Product Service"})
@@ -71,4 +71,64 @@ func ViewHistoryHandler(c *gin.Context) {
 	}
 
 	c.JSON(status, products.ViewHistory)
+}
+
+func CreateViewHandler(c *gin.Context) {
+	userID := c.GetString("userID")
+	c.Request.Header.Set("X-User-ID", userID)
+
+	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
+	if err != nil {
+		log.Println("CreateViewHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("CreateViewHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось добавить просмотр товара"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{})
+}
+
+func DeleteViewHandler(c *gin.Context) {
+	userID := c.GetString("userID")
+	c.Request.Header.Set("X-User-ID", userID)
+
+	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
+	if err != nil {
+		log.Println("DeleteViewHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("DeleteViewHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось удалить просмотр товара"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func ClearViewHistoryHandler(c *gin.Context) {
+	userID := c.GetString("userID")
+	c.Request.Header.Set("X-User-ID", userID)
+
+	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
+	if err != nil {
+		log.Println("ClearViewHistoryHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("ClearViewHistoryHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось очистить историю просмотра"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }

@@ -55,8 +55,8 @@ function createProductCard(item) {
             ${item.price.toLocaleString('ru-RU')} ₽
           </div>
           <div class="product-actions">
-            <div class="action-btn">
-              <i class="${item.is_favorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
+            <div class="action-btn favorite-btn" data-id="${item.product_id}">
+                <i class="${item.is_favorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
             </div>
           </div>
         </div>
@@ -90,10 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('stat-favorites').textContent = 0;
             }
 
-            // if (data.user_data.role === 'user') {
-            //     document.getElementById('become-creator-btn').classList.remove('hidden');
-            // }
-
             // Подставляем избранные товары
             const favGrid = document.getElementById('favorites-grid');
             favGrid.innerHTML = '';
@@ -118,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 histGrid.innerHTML = '<p style="padding: 20px">Нет истории просмотров.</p>';
             }
             attachItemEventListeners();
+            attachFavoriteHandlers()
         })
         .catch(err => {
             console.error(err);

@@ -7,7 +7,14 @@ import (
 
 func SelectCategories() ([]models.Category, error) {
 	var categories []models.Category
-	if err := db.DB().Find(&categories).Error; err != nil {
+	err := db.DB().
+		Model(&models.Category{}).
+		Select(`categories.*, 
+        (SELECT COUNT(*) FROM products 
+         WHERE products.category_id = categories.id) AS product_count`).
+		Find(&categories).
+		Error
+	if err != nil {
 		return nil, err
 	}
 

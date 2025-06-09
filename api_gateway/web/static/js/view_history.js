@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const listContainer = document.getElementById('view-history-list');
 
     // Создаёт DOM-элемент для карточки товара
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="action-btn share-btn" data-product-id="${item.product_id}" data-brand-id="${item.brand_id}">
                     <i class="fas fa-share-alt"></i>
                 </div>
-                <div class="action-btn remove-btn" >
+                <div class="action-btn remove-btn" data-id="${item.product_id}" data-url="view-history">
                     <i class="fas fa-trash-alt"></i>
                 </div>
             </div>
@@ -87,9 +87,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     // Кнопка "Очистить избранное"
-    document.getElementById('clear-all-btn').addEventListener('click', function() {
+    document.getElementById('clear-all-btn').addEventListener('click', function () {
         if (confirm('Вы уверены, что хотите очистить историю просмотра?')) {
-            listContainer.innerHTML = `
+            setTimeout(async () => {
+                try {
+                    const res = await fetch(`/api/v1/view-history`, {
+                        method: 'DELETE',
+                    });
+                    if (!res.ok) throw new Error();
+                    listContainer.innerHTML = `
           <div class="empty-view-history">
             <div class="empty-icon"><i class="far fa-heart"></i></div>
             <h2 class="empty-title">Ваша история просмотра пуста</h2>
@@ -101,6 +107,13 @@ document.addEventListener('DOMContentLoaded', function() {
             </a>
           </div>
         `;
+                } catch {
+                    alert('Не удалось очистить избранное.\n Повторите попытку позже.');
+                    const error = new Error('Не удалось очистить избранное');
+                    console.error(error);
+                }
+            }, 300);
+
             // Обновляем счётчик в шапке, если он есть:
             const countEl = document.querySelector('.favorites-count');
             if (countEl) countEl.textContent = '0';

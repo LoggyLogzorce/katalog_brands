@@ -112,3 +112,17 @@ func ViewHistoryHandler(c *gin.Context) {
 		"Name":  first,
 	})
 }
+
+func CategoryProductHandler(c *gin.Context) {
+	role := c.GetString("role")
+	name := c.GetString("name")
+	var first string
+	if len(name) > 0 {
+		first = string([]rune(name)[0])
+	}
+	c.HTML(http.StatusOK, "products_category.html", gin.H{
+		"title": "Просмотр категории",
+		"Role":  role,
+		"Name":  first,
+	})
+}

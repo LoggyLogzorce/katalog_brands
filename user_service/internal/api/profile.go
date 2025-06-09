@@ -5,7 +5,7 @@ import (
 	"user_service/internal/storage"
 )
 
-func GetProfileInfo(c *gin.Context) {
+func GetProfileInfoHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 	role := c.GetHeader("X-Role")
 
@@ -34,7 +34,7 @@ func GetProfileInfo(c *gin.Context) {
 	})
 }
 
-func UpdateRole(c *gin.Context) {
+func UpdateRoleHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 	role := c.GetHeader("X-Role")
 

@@ -12,6 +12,7 @@ type Product struct {
 	Status      string        `json:"status"`
 	CreatedAt   time.Time     `json:"created_at"`
 	IsFavorite  bool          `gorm:"-" json:"is_favorite"`
+	Rating      Rating        `gorm:"-" json:"rating"`
 	ProductUrls []ProductUrls `json:"product_urls"`
 	Category    Category      `gorm:"foreignKey:CategoryID;references:id" json:"category"`
 }

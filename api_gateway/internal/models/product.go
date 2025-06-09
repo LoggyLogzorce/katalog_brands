@@ -2,27 +2,28 @@ package models
 
 import "time"
 
-type ProductRequest struct {
+type ProfileProductRequest struct {
 	Favorite    []uint64 `json:"favorite"`
 	ViewHistory []uint64 `json:"view_history"`
 }
 
-type ProductResponse struct {
+type ProfileProductResponse struct {
 	Favorite    []Product `json:"favorites"`
 	ViewHistory []Product `json:"view_history"`
 }
 
 type Product struct {
-	ID          uint64        `gorm:"primaryKey" json:"product_id"`
+	ID          uint64        `json:"product_id"`
 	BrandID     uint64        `json:"brand_id"`
 	Name        string        `json:"name"`
 	Description string        `json:"description"`
 	Price       float64       `json:"price"`
 	Status      string        `json:"status"`
 	CreatedAt   time.Time     `json:"created_at"`
-	IsFavorite  bool          `gorm:"-" json:"is_favorite"`
+	IsFavorite  bool          `json:"is_favorite"`
+	Rating      Rating        `json:"rating"`
 	ProductUrls []ProductUrls `json:"product_urls"`
-	Category    Category      `gorm:"foreignKey:CategoryID;references:id" json:"category"`
+	Category    Category      `json:"category"`
 }
 
 type ProductUrls struct {

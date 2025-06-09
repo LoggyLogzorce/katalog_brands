@@ -47,7 +47,7 @@ func ProfileHandler(c *gin.Context) {
 		viewsHistoryID = append(viewsHistoryID, v.ProductID)
 	}
 
-	productsID := models.ProductRequest{
+	productsID := models.ProfileProductRequest{
 		Favorite:    favoritesID,
 		ViewHistory: viewsHistoryID,
 	}
@@ -72,7 +72,7 @@ func ProfileHandler(c *gin.Context) {
 		return
 	}
 
-	var products models.ProductResponse
+	var products models.ProfileProductResponse
 	if err = json.Unmarshal(body, &products); err != nil {
 		log.Println("ProfileHandler: ошибка разбора JSON от Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа Product Service"})
@@ -83,6 +83,14 @@ func ProfileHandler(c *gin.Context) {
 	resp.UserData = profile.UserData
 	resp.Favorites = products.Favorite
 	resp.ViewHistory = products.ViewHistory
+
+	for i := range resp.ViewHistory {
+		for _, v := range favoritesID {
+			if resp.ViewHistory[i].ID == v {
+				resp.ViewHistory[i].IsFavorite = true
+			}
+		}
+	}
 
 	c.JSON(status, resp)
 }

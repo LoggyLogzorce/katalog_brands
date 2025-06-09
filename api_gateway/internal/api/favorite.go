@@ -16,7 +16,7 @@ func FavoriteHandler(c *gin.Context) {
 	status, _, body, err := proxyTo(c, "http://localhost:8082", "", nil)
 	if err != nil {
 		log.Println("FavoriteHandler: ошибка вызова User Service:", err)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
 		return
 	}
 
@@ -39,7 +39,7 @@ func FavoriteHandler(c *gin.Context) {
 		favoritesID = append(favoritesID, v.ProductID)
 	}
 
-	productsID := models.ProductRequest{
+	productsID := models.ProfileProductRequest{
 		Favorite: favoritesID,
 	}
 
@@ -63,7 +63,7 @@ func FavoriteHandler(c *gin.Context) {
 		return
 	}
 
-	var products models.ProductResponse
+	var products models.ProfileProductResponse
 	if err = json.Unmarshal(body, &products); err != nil {
 		log.Println("FavoriteHandler: ошибка разбора JSON от Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа Product Service"})
@@ -71,4 +71,64 @@ func FavoriteHandler(c *gin.Context) {
 	}
 
 	c.JSON(status, products.Favorite)
+}
+
+func CreateFavoriteHandler(c *gin.Context) {
+	userID := c.GetString("userID")
+	c.Request.Header.Set("X-User-ID", userID)
+
+	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
+	if err != nil {
+		log.Println("CreateFavoriteHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("CreateFavoriteHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось добавить товар в избранное"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{})
+}
+
+func DeleteFavoriteHandler(c *gin.Context) {
+	userID := c.GetString("userID")
+	c.Request.Header.Set("X-User-ID", userID)
+
+	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
+	if err != nil {
+		log.Println("DeleteFavoriteHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("DeleteFavoriteHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось удалить товар из избранного"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
+}
+
+func ClearFavoriteHandler(c *gin.Context) {
+	userID := c.GetString("userID")
+	c.Request.Header.Set("X-User-ID", userID)
+
+	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
+	if err != nil {
+		log.Println("ClearFavoriteHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("ClearFavoriteHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось очистить избранное"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }

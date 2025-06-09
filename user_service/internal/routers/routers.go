@@ -10,10 +10,24 @@ func SetRouters() *gin.Engine {
 
 	apiGroup := r.Group("/api/v1")
 	{
-		apiGroup.GET("/profile", api.GetProfileInfo)
-		apiGroup.GET("/favorites", api.GetFavorites)
-		apiGroup.GET("/view-history", api.GetViewHistory)
-		apiGroup.PUT("/update_role", api.UpdateRole)
+		apiGroup.GET("/profile", api.GetProfileInfoHandler)
+		apiGroup.PUT("/update_role", api.UpdateRoleHandler)
+
+		favGroup := apiGroup.Group("/favorites")
+		{
+			favGroup.GET("/", api.GetFavoritesHandler)
+			favGroup.POST("/:id", api.CreateFavoriteHandler)
+			favGroup.DELETE("/:id", api.DeleteFavoriteHandler)
+			favGroup.DELETE("/", api.ClearFavoriteHandler)
+		}
+
+		hisGroup := apiGroup.Group("/view-history")
+		{
+			hisGroup.GET("/", api.GetViewHistoryHandler)
+			hisGroup.POST("/:id", api.CreateViewProductHandler)
+			hisGroup.DELETE("/:id", api.DeleteViewProductHandler)
+			hisGroup.DELETE("/", api.ClearViewHistoryHandler)
+		}
 	}
 
 	return r
