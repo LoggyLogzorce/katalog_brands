@@ -70,6 +70,12 @@ func FavoriteHandler(c *gin.Context) {
 		return
 	}
 
+	// TODO заменить на запрос к Review service
+	for i := range products.Favorite {
+		products.Favorite[i].Rating.AvgRating = 3.5
+		products.Favorite[i].Rating.CountReview = 100
+	}
+
 	c.JSON(status, products.Favorite)
 }
 

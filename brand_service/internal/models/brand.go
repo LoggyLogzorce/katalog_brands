@@ -11,3 +11,7 @@ type Brand struct {
 	Status      string    `json:"status"`
 	CreatedAt   time.Time `json:"created_at"`
 }
+
+func (_ *Brand) TableName() string {
+	return "brands"
+}

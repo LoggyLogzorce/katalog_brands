@@ -25,7 +25,10 @@ document.addEventListener('DOMContentLoaded', function () {
           <div class="item-header">
             <h2 class="item-name">${item.name}</h2>
             <div class="item-rating">
-              
+              ${'<i class="fas fa-star"></i>'.repeat(Math.floor(item.rating.avg_rating))}
+                    ${item.rating.avg_rating % 1 >= 0.5 ? '<i class="fas fa-star-half-alt"></i>' : ''}
+                    ${'<i class="far fa-star"></i>'.repeat(5 - Math.ceil(item.rating.avg_rating))}
+                    <span>${item.rating.count_review}</span>
             </div>
           </div>
           <div class="item-category">${item.category.name}</div>

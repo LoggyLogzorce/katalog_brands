@@ -24,6 +24,7 @@ type Product struct {
 	Rating      Rating        `json:"rating"`
 	ProductUrls []ProductUrls `json:"product_urls"`
 	Category    Category      `json:"category"`
+	Brand       Brand         `json:"brand"`
 }
 
 type ProductUrls struct {

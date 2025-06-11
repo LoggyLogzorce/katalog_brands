@@ -94,5 +94,10 @@ func CategoryProductHandler(c *gin.Context) {
 		return
 	}
 
+	for i := range products {
+		products[i].Rating.AvgRating = 3.5
+		products[i].Rating.CountReview = 100
+	}
+
 	c.JSON(status, products)
 }

@@ -70,6 +70,12 @@ func ViewHistoryHandler(c *gin.Context) {
 		return
 	}
 
+	// TODO заменить на запрос к Review service
+	for i := range products.ViewHistory {
+		products.ViewHistory[i].Rating.AvgRating = 3.5
+		products.ViewHistory[i].Rating.CountReview = 100
+	}
+
 	c.JSON(status, products.ViewHistory)
 }
 

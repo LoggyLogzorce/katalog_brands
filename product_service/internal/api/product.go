@@ -96,20 +96,13 @@ func GetProductInCategory(c *gin.Context) {
 		return
 	}
 
-	// var productsID []uint64
-
 	for i := range products {
 		for _, v := range data.Favorite {
 			if products[i].ID == v {
 				products[i].IsFavorite = true
 			}
 		}
-		// productsID = append(productsID, products[i].ID)
-		products[i].Rating.AvgRating = 3.5
-		products[i].Rating.CountReview = 100
 	}
-
-	// запрос к review service на получение среднего рейтинга и количества отзывов
 
 	c.JSON(200, products)
 }
