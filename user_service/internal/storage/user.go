@@ -15,10 +15,10 @@ func SelectUser(userID, role string) (models.User, error) {
 	return user, nil
 }
 
-func UpdateRoleUser(userID, role string) error {
+func UpdateRoleUser(userID, role, updateRole string) error {
 	err := db.DB().Model(&models.User{}).
-		Where("id = ?", userID).
-		Update("role", role).
+		Where("id = ? and role=?", userID, role).
+		Update("role", updateRole).
 		Error
 	if err != nil {
 		return err

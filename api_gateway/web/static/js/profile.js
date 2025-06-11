@@ -1,9 +1,9 @@
 // Инициализация функционала страницы
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Обработчики для кнопок действий
     const actionButtons = document.querySelectorAll('.action-btn');
     actionButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             if (this.querySelector('.fa-heart')) {
                 const icon = this.querySelector('.fa-heart');
                 if (icon.classList.contains('far')) {
@@ -20,14 +20,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Обработчики для кнопок профиля
-    const profileButtons = document.querySelectorAll('.btn');
-    profileButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (!this.href) {
-                e.preventDefault();
-                alert('Функционал в разработке');
-            }
-        });
+    const changePassword = document.getElementById('change-password-btn');
+    changePassword.addEventListener('click', function (e) {
+        if (!this.href) {
+            e.preventDefault();
+            alert('Функционал в разработке');
+        }
+    });
+
+    const updateRole = document.getElementById('become-creator-btn');
+    updateRole.addEventListener('click', function (e) {
+        if (!this.href) {
+            e.preventDefault();
+            fetch('/api/v1/update_role', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    role: 'creator',
+                }),
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error('Не удалось сменить роль пользователя');
+                })
+                .then(data => {
+                    alert('Роль пользователя успешно изменена\nПовторите вход для применения изменений');
+                    window.location.href = '/auth';
+                })
+                .catch(err => {
+                    alert(err.message);
+                });
+        }
     });
 });
 

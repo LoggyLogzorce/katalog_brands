@@ -25,7 +25,7 @@ func ProfileHandler(c *gin.Context) {
 
 	if status != http.StatusOK {
 		log.Println("ProfileHandler: User Service вернул статус", status)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось получить информацию для профиля"})
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось получить информацию для профиля"})
 		return
 	}
 
@@ -68,7 +68,7 @@ func ProfileHandler(c *gin.Context) {
 
 	if status != http.StatusOK {
 		log.Println("ProfileHandler: Product Service вернул статус", status)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось получить информацию о продуктах"})
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось получить информацию о продуктах"})
 		return
 	}
 
@@ -79,10 +79,11 @@ func ProfileHandler(c *gin.Context) {
 		return
 	}
 
-	var resp models.ProfileResponse
-	resp.UserData = profile.UserData
-	resp.Favorites = products.Favorite
-	resp.ViewHistory = products.ViewHistory
+	resp := models.ProfileResponse{
+		UserData:    profile.UserData,
+		Favorites:   products.Favorite,
+		ViewHistory: products.ViewHistory,
+	}
 
 	for i := range resp.ViewHistory {
 		for _, v := range favoritesID {
@@ -102,5 +103,18 @@ func UpdateRoleHandler(c *gin.Context) {
 	c.Request.Header.Set("X-User-ID", userID)
 	c.Request.Header.Set("X-Role", role)
 
-	proxyTo(c, "http://localhost:8082", "", nil)
+	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
+	if err != nil {
+		log.Println("UpdateRoleHandler: не удалось обновить роль пользователя", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось изменить роль пользователя"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("UpdateRoleHandler: User service вернул статус", status)
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось изменить роль пользователя"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{})
 }

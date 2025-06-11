@@ -106,7 +106,7 @@ func DeleteFavoriteHandler(c *gin.Context) {
 
 	if status != http.StatusOK {
 		log.Println("DeleteFavoriteHandler: User Service вернул статус", status)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось удалить товар из избранного"})
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось удалить товар из избранного"})
 		return
 	}
 
@@ -126,7 +126,7 @@ func ClearFavoriteHandler(c *gin.Context) {
 
 	if status != http.StatusOK {
 		log.Println("ClearFavoriteHandler: User Service вернул статус", status)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось очистить избранное"})
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось очистить избранное"})
 		return
 	}
 

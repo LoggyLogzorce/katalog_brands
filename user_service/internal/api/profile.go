@@ -2,6 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
+	"user_service/internal/models"
 	"user_service/internal/storage"
 )
 
@@ -35,10 +37,17 @@ func GetProfileInfoHandler(c *gin.Context) {
 }
 
 func UpdateRoleHandler(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBindBodyWithJSON(&user); err != nil {
+		log.Println("UpdateRoleHandler: не удалось получить роль из тела запроса", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить роль из тела запроса"})
+		return
+	}
+
 	userID := c.GetHeader("X-User-ID")
 	role := c.GetHeader("X-Role")
 
-	if err := storage.UpdateRoleUser(userID, role); err != nil {
+	if err := storage.UpdateRoleUser(userID, role, user.Role); err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "Ошибка обновления роли", "error_sys": err})
 		return
 	}

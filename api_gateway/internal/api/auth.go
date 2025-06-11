@@ -16,7 +16,7 @@ func LoginHandler(c *gin.Context) {
 
 	if status != http.StatusOK {
 		log.Println("LoginHandler: Auth Service вернул статус", status)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось авторизоваться"})
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось авторизоваться"})
 		return
 	}
 
@@ -33,7 +33,7 @@ func RegisterHandler(c *gin.Context) {
 
 	if status != http.StatusCreated {
 		log.Println("RegisterHandler: Auth Service вернул статус", status)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось зарегистрироваться"})
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось зарегистрироваться"})
 		return
 	}
 

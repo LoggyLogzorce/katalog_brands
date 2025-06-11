@@ -126,7 +126,7 @@ func ClearViewHistoryHandler(c *gin.Context) {
 
 	if status != http.StatusOK {
 		log.Println("ClearViewHistoryHandler: User Service вернул статус", status)
-		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось очистить историю просмотра"})
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось очистить историю просмотра"})
 		return
 	}
 

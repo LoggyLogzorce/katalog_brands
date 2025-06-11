@@ -43,13 +43,13 @@ func Login(c *gin.Context) {
 	prefixToken := strings.Join([]string{"Bearer", token}, " ")
 
 	c.SetCookie(
-		"access_token", // имя куки
-		prefixToken,    // значение токена
-		900,            // время жизни (секунды)
-		"/",            // путь
-		"localhost",    // домен (замени на свой)
-		true,           // Secure (https)
-		true,           // HttpOnly
+		"access_token",
+		prefixToken,
+		900,
+		"/",
+		"localhost",
+		true,
+		true,
 	)
 	c.JSON(200, gin.H{})
 }
