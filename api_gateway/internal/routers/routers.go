@@ -15,6 +15,7 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/auth", handlers.AuthHandler)
 	r.GET("/register", handlers.RegisterHandler)
 	r.GET("/brands", middleware.OptionalAuthMiddleware(), handlers.BrandsHandler)
+	r.GET("/brand/:name", middleware.OptionalAuthMiddleware(), handlers.BrandPageHandler)
 	r.GET("/categories", middleware.OptionalAuthMiddleware(), handlers.CategoriesHandler)
 	r.GET("/category/:id", middleware.OptionalAuthMiddleware(), handlers.CategoryProductHandler)
 	r.GET("/profile", middleware.OptionalAuthMiddleware(), handlers.ProfileHandler)
@@ -29,9 +30,12 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 	apiGroup := r.Group("/api/v1")
 	{
 		apiGroup.GET("/brands", api.BrandsHandler)
+		apiGroup.GET("/brand/:name", api.BrandHandler)
 
 		apiGroup.GET("/categories", api.CategoryHandler)
-		apiGroup.GET("/category/:id/products", middleware.OptionalAuthMiddleware(), api.CategoryProductHandler)
+		apiGroup.GET("/category/:id/products/:status", middleware.OptionalAuthMiddleware(), api.CategoryProductHandler)
+
+		apiGroup.GET("/products/:status", middleware.OptionalAuthMiddleware(), api.ProductsHandler)
 
 		apiGroup.POST("/login", api.LoginHandler)
 		apiGroup.POST("/register", api.RegisterHandler)
@@ -40,9 +44,9 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 		favGroup := apiGroup.Group("/favorites", middleware.OptionalAuthMiddleware())
 		{
 			favGroup.GET("/", api.FavoriteHandler)
-			favGroup.DELETE("/", api.ClearFavoriteHandler)
 			favGroup.POST("/:id", api.CreateFavoriteHandler)
 			favGroup.DELETE("/:id", api.DeleteFavoriteHandler)
+			favGroup.DELETE("/", api.ClearFavoriteHandler)
 		}
 
 		hisGroup := apiGroup.Group("/view-history", middleware.OptionalAuthMiddleware())

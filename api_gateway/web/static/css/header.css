@@ -1,11 +1,3 @@
-.search-bar {
-    flex: 0 1 500px;
-    padding: 0.8rem;
-    border: 1px solid #F5F5DC;
-    border-radius: 25px;
-    margin: 0 2rem;
-}
-
 /* Шапка */
 .header {
     display: flex;

@@ -15,7 +15,7 @@
             Но не волнуйтесь! Мы поможем вам вернуться на верный путь.
         </p>
 
-        <div class="search-box">
+        <div class="search-bar">
             <input type="text" placeholder="Что вы ищете?">
             <button><i class="fas fa-search"></i></button>
         </div>
@@ -39,7 +39,7 @@
             document.querySelector('.error-title').style.opacity = '1';
             document.querySelector('.error-text').style.opacity = '1';
             document.querySelector('.error-image').style.opacity = '1';
-            document.querySelector('.search-box').style.opacity = '1';
+            document.querySelector('.search-bar').style.opacity = '1';
             document.querySelector('.action-buttons').style.opacity = '1';
         }, 300);
 
@@ -54,25 +54,8 @@
                 this.style.transform = 'translateY(0)';
             });
         });
-
-        // Обработка поиска
-        const searchButton = document.querySelector('.search-box button');
-        const searchInput = document.querySelector('.search-box input');
-
-        searchButton.addEventListener('click', function() {
-            if (searchInput.value.trim() !== '') {
-                alert(`Поиск: "${searchInput.value}"\nК сожалению, в демо-версии поиск не работает.`);
-            } else {
-                searchInput.focus();
-            }
-        });
-
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchButton.click();
-            }
-        });
     });
 </script>
+<script src="/static/js/search.js"></script>
 </body>
 </html>

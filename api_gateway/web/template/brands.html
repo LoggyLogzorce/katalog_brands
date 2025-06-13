@@ -1,17 +1,34 @@
 {{ template "base" . }}
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="/static/css/index.css" rel="stylesheet">
-<link href="/static/css/brands.css" rel="stylesheet">
+<link href="/static/css/categories.css" rel="stylesheet">
 </head>
 <body>
 
 {{ template "header" . }}
 
-<section class="section">
-    <h1 class="section-title">Все бренды</h1>
-    <div id="brands-list" class="brands-grid"></div>
+<!-- Герой-секция -->
+<section class="hero">
+    <h1>Откройте для себя лучшие бренды</h1>
+    <p>Изучите каталог проверенных брендов, познакомьтесь с их ассотиментом и откройте для себя новинки сезона.</p>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Поиск по брендам и товарам...">
+        <button><i class="fas fa-search"></i></button>
+    </div>
 </section>
 
+<!-- Основной контент -->
+<div class="brands-container">
+    <div class="section-header">
+        <h2 class="section-title">
+            <i class="fas fa-list"></i> Все бренды
+        </h2>
+        <a href="/products" class="view-all">Смотреть все товары</a>
+    </div>
+
+    <div class="brands-grid"></div>
+</div>
+
 <script src="/static/js/brands.js"></script>
+<script src="/static/js/search.js"></script>
 
 {{ template "footer" . }}

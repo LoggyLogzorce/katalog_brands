@@ -50,7 +50,7 @@ func FavoriteHandler(c *gin.Context) {
 		return
 	}
 
-	status, _, body, err = proxyTo(c, "http://localhost:8083", "/api/v1/products", bytes.NewBuffer(favoritesIDJson))
+	status, _, body, err = proxyTo(c, "http://localhost:8083", "/api/v1/products/approved", bytes.NewBuffer(favoritesIDJson))
 	if err != nil {
 		log.Println("FavoriteHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})

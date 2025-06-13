@@ -1,12 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const parts = window.location.pathname.split('/');
-    const categoryId = parts[parts.length - 1];
-
-    const sortSelect = document.getElementById('sort');
-    let products = [];
-
     const grid = document.getElementById('products-list');
-    const categoryName = document.getElementById('category-title');
     grid.innerHTML = '<p class="loading">Загрузка товаров…</p>';
 
     function createProductCard(item) {
@@ -41,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderProducts(list) {
         grid.innerHTML = '';
         if (!list.length) {
-            grid.innerHTML = '<p>Товары в этой категории не найдены.</p>';
+            grid.innerHTML = '<p>Товары не найдены.</p>';
             return;
         }
         list.forEach(item => {
@@ -65,7 +58,14 @@ document.addEventListener('DOMContentLoaded', function () {
         renderProducts(sorted);
     }
 
-    fetch(`/api/v1/category/${categoryId}/products/approved`, {method: 'GET'})
+    const parts = window.location.pathname.split('/');
+    const count = parts[parts.length - 1] || parts[parts.length - 2];
+    let param = 'all';
+    if (count !== '/') {
+        param = 4
+    }
+
+    fetch(`/api/v1/products/approved?count=${param}`, {method: 'GET'})
         .then(res => {
             if (!res.ok) throw new Error('Ошибка загрузки товаров');
             return res.json();
@@ -76,14 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 grid.innerHTML = '<p>Товары в этой категории не найдены.</p>';
                 return;
             }
-            categoryName.textContent = data[0].category.name;
-            products = data;
-            renderProducts(products);
+            renderProducts(data);
         })
         .catch(err => {
             console.error(err);
             grid.innerHTML = '<p class="error">Не удалось загрузить товары.</p>';
         });
-
-    sortSelect.addEventListener('change', applySort);
 });

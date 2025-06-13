@@ -50,7 +50,7 @@ func ViewHistoryHandler(c *gin.Context) {
 		return
 	}
 
-	status, _, body, err = proxyTo(c, "http://localhost:8083", "/api/v1/products", bytes.NewBuffer(viewHistoryIDJson))
+	status, _, body, err = proxyTo(c, "http://localhost:8083", "/api/v1/products/approved", bytes.NewBuffer(viewHistoryIDJson))
 	if err != nil {
 		log.Println("ViewHistoryHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})

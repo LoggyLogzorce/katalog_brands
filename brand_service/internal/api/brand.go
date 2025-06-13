@@ -1,12 +1,12 @@
 package api
 
 import (
-	"brand_service/internal/models"
 	"brand_service/internal/storage"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 )
 
 type BrandRequest struct {
@@ -14,12 +14,15 @@ type BrandRequest struct {
 }
 
 func GetAllBrands(c *gin.Context) {
-	var brand models.Brand
-	if err := c.ShouldBindBodyWithJSON(&brand); err != nil {
-		log.Println("GetAllBrands: не удалось получить статус брендов для их получения", err)
+	status := c.Param("status")
+	count := c.Query("count")
+
+	limitInt, err := strconv.Atoi(count)
+	if err != nil {
+		limitInt = -1
 	}
 
-	brands, err := storage.GetAllBrands(brand.Status)
+	brands, err := storage.GetAllBrands(status, limitInt)
 	if err != nil {
 		log.Println("GetAllBrands: не удалось получить информацию о брендах из бд", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить информацию о брендах"})

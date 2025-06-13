@@ -1,27 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Поиск по категориям
-    const searchInput = document.querySelector('.search-bar input');
-    const searchButton = document.querySelector('.search-bar button');
-
-    searchButton.addEventListener('click', function () {
-        if (searchInput.value.trim() !== '') {
-            alert(`Поиск: "${searchInput.value}"\nРезультаты будут показаны на следующей странице.`);
-            // window.location.href = `/search?query=${encodeURIComponent(searchInput.value)}`;
-        } else {
-            searchInput.focus();
-        }
-    });
-
-    searchInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') searchButton.click();
-    });
-
-    // Контейнер для категорий
+    const parts = window.location.pathname.split('/');
+    const count = parts[parts.length - 1] || parts[parts.length - 2];
+    let param = 'all';
+    if (count !== 'categories') {
+        param = 3
+    }
     const grid = document.querySelector('.categories-grid');
     grid.innerHTML = '<p class="loading">Загрузка категорий…</p>';
 
     // Запрос на получение категорий
-    fetch('/api/v1/categories', {
+    fetch(`/api/v1/categories?count=${param}`, {
         method: 'GET'
     })
         .then(res => {

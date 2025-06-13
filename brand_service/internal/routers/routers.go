@@ -10,7 +10,7 @@ func SetRouters() *gin.Engine {
 
 	apiGroup := r.Group("/api/v1")
 	{
-		apiGroup.GET("/brands", api.GetAllBrands)
+		apiGroup.GET("/brands/:status", api.GetAllBrands)
 		apiGroup.GET("/brand", api.GetBrandInfo)
 		apiGroup.GET("/brand/:name", api.GetBrand)
 	}

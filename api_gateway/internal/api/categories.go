@@ -1,8 +1,8 @@
 package api
 
 import (
+	"api_gateway/internal/handlers"
 	"api_gateway/internal/models"
-	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -34,6 +34,12 @@ func CategoryHandler(c *gin.Context) {
 }
 
 func CategoryProductHandler(c *gin.Context) {
+	productStatus := c.Param("status")
+	if productStatus != "approved" {
+		handlers.PageNotFound(c)
+		return
+	}
+
 	userID := c.GetString("userID")
 	c.Request.Header.Set("X-User-ID", userID)
 
@@ -63,18 +69,7 @@ func CategoryProductHandler(c *gin.Context) {
 		favoritesID = append(favoritesID, v.ProductID)
 	}
 
-	productsID := models.ProfileProductRequest{
-		Favorite: favoritesID,
-	}
-
-	favoritesIDJson, err := json.Marshal(productsID)
-	if err != nil {
-		log.Println("FavoriteHandler: ошибка маршализации productsID:", err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal error"})
-		return
-	}
-
-	status, _, body, err = proxyTo(c, "http://localhost:8083", "", bytes.NewReader(favoritesIDJson))
+	status, _, body, err = proxyTo(c, "http://localhost:8083", "", nil)
 	if err != nil {
 		log.Println("CategoryProductHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
@@ -92,6 +87,14 @@ func CategoryProductHandler(c *gin.Context) {
 		log.Println("CategoryProductHandler: ошибка разбора JSON от Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа Product Service"})
 		return
+	}
+
+	for i := range products {
+		for _, v := range favoritesID {
+			if products[i].ID == v {
+				products[i].IsFavorite = true
+			}
+		}
 	}
 
 	for i := range products {

@@ -59,7 +59,7 @@ func ProfileHandler(c *gin.Context) {
 		return
 	}
 
-	status, _, body, err = proxyTo(c, "http://localhost:8083", "/api/v1/products", bytes.NewBuffer(productsIDJson))
+	status, _, body, err = proxyTo(c, "http://localhost:8083", "/api/v1/products/approved", bytes.NewBuffer(productsIDJson))
 	if err != nil {
 		log.Println("ProfileHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
