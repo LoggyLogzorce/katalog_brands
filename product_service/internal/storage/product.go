@@ -112,5 +112,21 @@ func GetProducts(status string, limit int) ([]models.Product, error) {
 		return nil, err
 	}
 
-	return products, err
+	return products, nil
+}
+
+func GetProduct(productID, brandID, status string) (models.Product, error) {
+	var product models.Product
+
+	err := db.DB().
+		Preload("ProductUrls").
+		Preload("Category").
+		Where("id=? and brand_id=? and status=?", productID, brandID, status).
+		First(&product).
+		Error
+	if err != nil {
+		return models.Product{}, err
+	}
+
+	return product, nil
 }

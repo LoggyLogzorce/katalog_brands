@@ -1,46 +1,68 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const grid = document.getElementById('products-list');
-    grid.innerHTML = '<p class="loading">Загрузка товаров…</p>';
+document.addEventListener('DOMContentLoaded', function() {
+    const parts = window.location.pathname.split('/');
+    const productID = parts[parts.length - 1] || parts[parts.length - 2];
+    const sortSelect = document.getElementById('sort');
+    let products = [];
 
-    function createProductCard(item) {
-        const badgeHTML = isNewProduct(item.created_at)
+    let param = 'all'
+    if (productID !== 'products') {
+        param = 4
+    }
+
+    fetch(`/api/v1/products/approved?count=${param}`, {
+        method: 'GET',
+    })
+        .then(response => response.json())
+        .then(products => {
+            initPage(products);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+
+    // Функция для создания карточки товара
+    function createProductCard(product) {
+        const mainImage = product.product_urls.length > 0
+            ? product.product_urls[0].url
+            : 'https://via.placeholder.com/300x200?text=No+Image';
+
+        const badgeHTML = isNewProduct(product.created_at)
             ? '<span class="badge">Новинка</span>'
             : '';
 
-        const div = document.createElement('div');
-        div.className = 'product-card';
-        div.innerHTML = `
-            ${badgeHTML}
-            <img src="/static/${item.product_urls[0].url}"
-                 alt="${item.name}" class="product-image">
-            <div class="product-info">
-                <h3 class="product-name">${item.name}</h3>
-                <div class="product-rating">
-                    ${'<i class="fas fa-star"></i>'.repeat(Math.floor(item.rating.avg_rating))}
-                    ${item.rating.avg_rating % 1 >= 0.5 ? '<i class="fas fa-star-half-alt"></i>' : ''}
-                    ${'<i class="far fa-star"></i>'.repeat(5 - Math.ceil(item.rating.avg_rating))}
-                    <span>${item.rating.count_review}</span>
-                </div>
-                <div class="product-price">${item.price.toLocaleString('ru-RU')} ₽</div>
-                <div class="product-actions">
-                    <div class="action-btn favorite-btn" data-id="${item.product_id}">
-                        <i class="${item.is_favorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
+        return `
+            <div class="product-card" data-product-id="${product.product_id}">
+                ${badgeHTML}
+                <img src="/static/${mainImage}" alt="${product.name}" class="product-image">
+                <div class="product-info">
+                    <span class="product-category">${product.category.name}</span>
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-rating">
+                        ${renderRatingStars(product.rating.avg_rating)}
+                        <span>(${product.rating.count_review})</span>
                     </div>
+                    <div class="product-price">${formatPrice(product.price)}</div>
+                    <div class="product-actions">
+                        <div class="action-btn favorite-btn" data-id="${product.product_id}">
+                            <i class="${product.is_favorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
+                        </div>
+                    </div>
+                    <a href="/brand/${product.brand.name}/product/${product.product_id}" class="category-link">
+                    Подробнее <i class="fas fa-arrow-right"></i>
+                </a>
                 </div>
-            </div>`;
-        return div;
+            </div>
+        `;
     }
 
-    function renderProducts(list) {
-        grid.innerHTML = '';
-        if (!list.length) {
-            grid.innerHTML = '<p>Товары не найдены.</p>';
-            return;
-        }
-        list.forEach(item => {
-            grid.appendChild(createProductCard(item));
+    // Функция для рендеринга всех товаров
+    function renderProducts(products) {
+        const productsGrid = document.querySelector('.products-grid');
+        productsGrid.innerHTML = '';
+
+        products.forEach(product => {
+            productsGrid.innerHTML += createProductCard(product);
         });
-        attachFavoriteHandlers();
     }
 
     function applySort() {
@@ -58,28 +80,12 @@ document.addEventListener('DOMContentLoaded', function () {
         renderProducts(sorted);
     }
 
-    const parts = window.location.pathname.split('/');
-    const count = parts[parts.length - 1] || parts[parts.length - 2];
-    let param = 'all';
-    if (count !== '/') {
-        param = 4
+    // Инициализация страницы
+    function initPage(data) {
+        renderProducts(data);
+        products = data;
+        attachFavoriteHandlers()
     }
 
-    fetch(`/api/v1/products/approved?count=${param}`, {method: 'GET'})
-        .then(res => {
-            if (!res.ok) throw new Error('Ошибка загрузки товаров');
-            return res.json();
-        })
-        .then(data => {
-            grid.innerHTML = '';
-            if (!Array.isArray(data) || data.length === 0) {
-                grid.innerHTML = '<p>Товары в этой категории не найдены.</p>';
-                return;
-            }
-            renderProducts(data);
-        })
-        .catch(err => {
-            console.error(err);
-            grid.innerHTML = '<p class="error">Не удалось загрузить товары.</p>';
-        });
+    sortSelect.addEventListener('change', applySort);
 });

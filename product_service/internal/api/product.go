@@ -34,7 +34,7 @@ type BrandCount struct {
 	Count   int    `json:"count"`
 }
 
-func GetProduct(c *gin.Context) {
+func GetProducts(c *gin.Context) {
 	status := c.Param("status")
 	count := c.Query("count")
 	if count != "" {
@@ -161,4 +161,19 @@ func CountProductInBrand(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+func GetProduct(c *gin.Context) {
+	productID := c.Param("pId")
+	brandID := c.Param("id")
+	status := c.Query("status")
+
+	product, err := storage.GetProduct(productID, brandID, status)
+	if err != nil {
+		log.Println("GetProduct: ошибка при получении данных продукта", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка при получении данных продукта"})
+		return
+	}
+
+	c.JSON(200, product)
 }

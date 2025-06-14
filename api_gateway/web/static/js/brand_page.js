@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const pr of brandData.products) {
             rating += pr.rating.avg_rating;
         }
-        avg_rating = rating / brandData.products.length
+        let avg_rating = rating / brandData.products.length
 
         document.querySelector('.stat-card.rating .stat-value').textContent = avg_rating.toFixed(1);
         document.querySelector('.stat-card.rating .stat-label').textContent = 'Рейтинг';
@@ -40,48 +40,19 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.products-title').textContent = `Товары ${brand.name}`;
     }
 
-    // Функция для форматирования цены
-    function formatPrice(price) {
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
-    }
-
-    // Функция для создания HTML звезд рейтинга
-    function renderRatingStars(rating) {
-        const fullStars = Math.floor(rating);
-        const halfStar = rating % 1 >= 0.5;
-        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-        let starsHtml = '';
-
-        // Полные звезды
-        for (let i = 0; i < fullStars; i++) {
-            starsHtml += '<i class="fas fa-star"></i>';
-        }
-
-        // Половина звезды
-        if (halfStar) {
-            starsHtml += '<i class="fas fa-star-half-alt"></i>';
-        }
-
-        // Пустые звезды
-        for (let i = 0; i < emptyStars; i++) {
-            starsHtml += '<i class="far fa-star"></i>';
-        }
-
-        return starsHtml;
-    }
-
     // Функция для создания карточки товара
     function createProductCard(product) {
         const mainImage = product.product_urls.length > 0
             ? product.product_urls[0].url
             : 'https://via.placeholder.com/300x200?text=No+Image';
 
-        const isFavorite = product.is_favorite ? 'active' : '';
-        const favoriteIcon = product.is_favorite ? 'fas fa-heart' : 'far fa-heart';
+        const badgeHTML = isNewProduct(product.created_at)
+            ? '<span class="badge">Новинка</span>'
+            : '';
 
         return `
             <div class="product-card" data-product-id="${product.product_id}">
+            ${badgeHTML}
                 <img src="/static/${mainImage}" alt="${product.name}" class="product-image">
                 <div class="product-info">
                     <span class="product-category">${product.category.name}</span>

@@ -18,7 +18,7 @@ type BrandResponse struct {
 	Products []Product `json:"products"`
 }
 
-type BrandCountRequest struct {
+type BrandRequest struct {
 	BrandIDs []uint64 `json:"brand_ids"`
 }
 

@@ -136,6 +136,16 @@ body {
     justify-content: space-between;
 }
 
+.product-category {
+    background: #fff0f5;
+    color: #d81b60;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
 .action-btn {
     width: 36px;
     height: 36px;

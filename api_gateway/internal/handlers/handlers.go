@@ -141,3 +141,18 @@ func BrandPageHandler(c *gin.Context) {
 		"Name":  first,
 	})
 }
+
+func ProductsHandler(c *gin.Context) {
+	page := c.Param("name")
+	role := c.GetString("role")
+	name := c.GetString("name")
+	var first string
+	if len(name) > 0 {
+		first = string([]rune(name)[0])
+	}
+	c.HTML(http.StatusOK, "products.html", gin.H{
+		"title": page,
+		"Role":  role,
+		"Name":  first,
+	})
+}

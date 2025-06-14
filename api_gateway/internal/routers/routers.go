@@ -18,6 +18,7 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/brand/:name", middleware.OptionalAuthMiddleware(), handlers.BrandPageHandler)
 	r.GET("/categories", middleware.OptionalAuthMiddleware(), handlers.CategoriesHandler)
 	r.GET("/category/:id", middleware.OptionalAuthMiddleware(), handlers.CategoryProductHandler)
+	r.GET("/products", middleware.OptionalAuthMiddleware(), handlers.ProductsHandler)
 	r.GET("/profile", middleware.OptionalAuthMiddleware(), handlers.ProfileHandler)
 	r.GET("/favorites", middleware.OptionalAuthMiddleware(), handlers.FavoriteHandler)
 	r.GET("/view-history", middleware.OptionalAuthMiddleware(), handlers.ViewHistoryHandler)
@@ -27,21 +28,22 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 }
 
 func SetApiRouters(r *gin.Engine) *gin.Engine {
-	apiGroup := r.Group("/api/v1")
+	publicGroup := r.Group("/api/v1")
 	{
-		apiGroup.GET("/brands", api.BrandsHandler)
-		apiGroup.GET("/brand/:name", api.BrandHandler)
+		publicGroup.GET("/brands", api.BrandsHandler)
+		publicGroup.GET("/brand/:name", middleware.OptionalAuthMiddleware(), api.BrandHandler)
+		publicGroup.GET("/brand/:name/product/:id", api.GetProductHandler)
 
-		apiGroup.GET("/categories", api.CategoryHandler)
-		apiGroup.GET("/category/:id/products/:status", middleware.OptionalAuthMiddleware(), api.CategoryProductHandler)
+		publicGroup.GET("/categories", api.CategoryHandler)
+		publicGroup.GET("/category/:id/products/:status", middleware.OptionalAuthMiddleware(), api.CategoryProductHandler)
 
-		apiGroup.GET("/products/:status", middleware.OptionalAuthMiddleware(), api.ProductsHandler)
+		publicGroup.GET("/products/:status", middleware.OptionalAuthMiddleware(), api.ProductsHandler)
 
-		apiGroup.POST("/login", api.LoginHandler)
-		apiGroup.POST("/register", api.RegisterHandler)
-		apiGroup.GET("/profile", middleware.OptionalAuthMiddleware(), api.ProfileHandler)
+		publicGroup.POST("/login", api.LoginHandler)
+		publicGroup.POST("/register", api.RegisterHandler)
+		publicGroup.GET("/profile", middleware.OptionalAuthMiddleware(), api.ProfileHandler)
 
-		favGroup := apiGroup.Group("/favorites", middleware.OptionalAuthMiddleware())
+		favGroup := publicGroup.Group("/favorites", middleware.OptionalAuthMiddleware())
 		{
 			favGroup.GET("/", api.FavoriteHandler)
 			favGroup.POST("/:id", api.CreateFavoriteHandler)
@@ -49,7 +51,7 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 			favGroup.DELETE("/", api.ClearFavoriteHandler)
 		}
 
-		hisGroup := apiGroup.Group("/view-history", middleware.OptionalAuthMiddleware())
+		hisGroup := publicGroup.Group("/view-history", middleware.OptionalAuthMiddleware())
 		{
 			hisGroup.GET("/", api.ViewHistoryHandler)
 			hisGroup.POST("/:id", api.CreateViewHandler)
@@ -57,7 +59,7 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 			hisGroup.DELETE("/", api.ClearViewHistoryHandler)
 		}
 
-		apiGroup.PUT("/update_role", middleware.OptionalAuthMiddleware(), api.UpdateRoleHandler)
+		publicGroup.PUT("/update_role", middleware.OptionalAuthMiddleware(), api.UpdateRoleHandler)
 	}
 
 	return r

@@ -63,12 +63,6 @@ func CategoryProductHandler(c *gin.Context) {
 		return
 	}
 
-	var favoritesID []uint64
-
-	for _, v := range favorites {
-		favoritesID = append(favoritesID, v.ProductID)
-	}
-
 	status, _, body, err = proxyTo(c, "http://localhost:8083", "", nil)
 	if err != nil {
 		log.Println("CategoryProductHandler: ошибка вызова Product Service:", err)
@@ -90,8 +84,8 @@ func CategoryProductHandler(c *gin.Context) {
 	}
 
 	for i := range products {
-		for _, v := range favoritesID {
-			if products[i].ID == v {
+		for _, v := range favorites {
+			if products[i].ID == v.ProductID {
 				products[i].IsFavorite = true
 			}
 		}
