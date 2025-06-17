@@ -144,14 +144,61 @@ func BrandHandler(c *gin.Context) {
 		return
 	}
 
+	var productsID []uint64
+	for _, v := range products {
+		productsID = append(productsID, v.ID)
+	}
+
+	productsStruct := models.ReviewsRequest{
+		ProductsID: productsID,
+	}
+
+	productsIDJson, err := json.Marshal(productsStruct)
+	if err != nil {
+		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
+	}
+
+	status, _, body, err = proxyTo(c, "http://localhost:8085", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
+	if err != nil {
+		log.Println("ProductsHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("ProductsHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось получить список категорий"})
+		return
+	}
+
+	var reviews []models.ReviewsResponse
+	if err = json.Unmarshal(body, &reviews); err != nil {
+		log.Println("ProductsHandler: ошибка разбора JSON от User Service:", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа User Service"})
+		return
+	}
+
 	for i := range products {
 		for _, v := range favorites {
 			if products[i].ID == v.ProductID {
 				products[i].IsFavorite = true
 			}
 		}
-		products[i].Rating.AvgRating = 3.5
-		products[i].Rating.CountReview = 100
+		var sum float64
+		var cnt int
+		for _, rv := range reviews {
+			if products[i].ID == rv.ProductID {
+				sum += rv.Rating
+				cnt++
+			}
+		}
+
+		products[i].Rating.CountReview = cnt
+		if cnt > 0 {
+			products[i].Rating.AvgRating = sum / float64(cnt)
+		} else {
+			products[i].Rating.AvgRating = 0
+		}
 	}
 
 	brandProducts := models.BrandResponse{

@@ -11,8 +11,6 @@ body {
     line-height: 1.6;
 }
 
-
-
 /* Основной контент */
 .profile-container {
     max-width: 1200px;
@@ -221,6 +219,20 @@ body {
 .product-actions {
     display: flex;
     justify-content: space-between;
+}
+
+.category-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #FFB6C1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.category-link:hover {
+    gap: 12px;
 }
 
 .action-btn {

@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
               ${item.price.toLocaleString('ru-RU')} ₽
             </div>
             <div class="item-actions">
-                <div class="action-btn share-btn" data-product-id="${item.product_id}" data-brand-id="${item.brand_id}">
+                <div class="action-btn share-btn" data-product-id="${item.product_id}" data-brand-name="${item.brand.name}">
                     <i class="fas fa-share-alt"></i>
                 </div>
                 <div class="action-btn remove-btn" data-id="${item.product_id}" data-url="view-history">

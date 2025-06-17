@@ -82,6 +82,9 @@ function createProductCard(item) {
             <div class="action-btn favorite-btn" data-id="${item.product_id}">
                 <i class="${item.is_favorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
             </div>
+            <a href="/brand/${item.brand.name}/product/${item.product_id}" class="category-link">
+                    Подробнее <i class="fas fa-arrow-right"></i>
+                </a>
           </div>
         </div>
       `;

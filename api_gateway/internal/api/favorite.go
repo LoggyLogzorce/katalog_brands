@@ -70,10 +70,90 @@ func FavoriteHandler(c *gin.Context) {
 		return
 	}
 
-	// TODO заменить на запрос к Review service
+	var brandsID []uint64
+	for _, v := range products.Favorite {
+		brandsID = append(brandsID, v.BrandID)
+	}
+
+	brandsStruct := models.BrandRequest{
+		BrandIDs: brandsID,
+	}
+
+	brandsIDJson, err := json.Marshal(brandsStruct)
+	if err != nil {
+		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
+	}
+
+	status, _, body, err = proxyTo(c, "http://localhost:8084", "/api/v1/brand", bytes.NewReader(brandsIDJson))
+	if err != nil {
+		log.Println("BrandsHandler: ошибка вызова Brand Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Brand Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("BrandsHandler: Brand Service вернул статус", status)
+		c.AbortWithStatusJSON(status, gin.H{"error": "не удалось получить список брендов"})
+		return
+	}
+
+	var brands []models.Brand
+	if err = json.Unmarshal(body, &brands); err != nil {
+		log.Println("BrandsHandler: ошибка разбора JSON от Brand Service:", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа Brand Service"})
+		return
+	}
+
+	productsStruct := models.ReviewsRequest{
+		ProductsID: favoritesID,
+	}
+
+	productsIDJson, err := json.Marshal(productsStruct)
+	if err != nil {
+		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
+	}
+
+	status, _, body, err = proxyTo(c, "http://localhost:8085", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
+	if err != nil {
+		log.Println("ProductsHandler: ошибка вызова User Service:", err)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
+		return
+	}
+
+	if status != http.StatusOK {
+		log.Println("ProductsHandler: User Service вернул статус", status)
+		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось получить список категорий"})
+		return
+	}
+
+	var reviews []models.ReviewsResponse
+	if err = json.Unmarshal(body, &reviews); err != nil {
+		log.Println("ProductsHandler: ошибка разбора JSON от User Service:", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка разбора ответа User Service"})
+		return
+	}
+
 	for i := range products.Favorite {
-		products.Favorite[i].Rating.AvgRating = 3.5
-		products.Favorite[i].Rating.CountReview = 100
+		for _, v := range brands {
+			if products.Favorite[i].BrandID == v.ID {
+				products.Favorite[i].Brand = v
+			}
+		}
+		var sum float64
+		var cnt int
+		for _, rv := range reviews {
+			if products.Favorite[i].ID == rv.ProductID {
+				sum += rv.Rating
+				cnt++
+			}
+		}
+
+		products.Favorite[i].Rating.CountReview = cnt
+		if cnt > 0 {
+			products.Favorite[i].Rating.AvgRating = sum / float64(cnt)
+		} else {
+			products.Favorite[i].Rating.AvgRating = 0
+		}
 	}
 
 	c.JSON(status, products.Favorite)
@@ -81,6 +161,10 @@ func FavoriteHandler(c *gin.Context) {
 
 func CreateFavoriteHandler(c *gin.Context) {
 	userID := c.GetString("userID")
+	if userID == "0" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Войдите в свою учётную запись, чтобы добавлять товары в избранное"})
+		return
+	}
 	c.Request.Header.Set("X-User-ID", userID)
 
 	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)

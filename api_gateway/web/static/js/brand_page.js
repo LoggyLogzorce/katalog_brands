@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return `
             <div class="product-card" data-product-id="${product.product_id}">
-            ${badgeHTML}
+                ${badgeHTML}
                 <img src="/static/${mainImage}" alt="${product.name}" class="product-image">
                 <div class="product-info">
                     <span class="product-category">${product.category.name}</span>
@@ -67,6 +67,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i class="${product.is_favorite ? 'fas' : 'far'} fa-heart" style="color: #FFB6C1;"></i>
                         </div>
                     </div>
+                    <a href="/brand/${brandName}/product/${product.product_id}" class="category-link">
+                    Подробнее <i class="fas fa-arrow-right"></i>
+                </a>
                 </div>
             </div>
         `;

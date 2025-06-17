@@ -38,8 +38,8 @@ function attachItemEventListeners() {
     document.querySelectorAll('.share-btn').forEach(button => {
         button.addEventListener('click', function() {
             const productId = this.getAttribute('data-product-id');
-            const brandId = this.getAttribute('data-brand-id');
-            const productURL = `${window.location.origin}/${brandId}/product/${productId}`;
+            const brandId = this.getAttribute('data-brand-name');
+            const productURL = `${window.location.origin}/brand/${brandId}/product/${productId}`;
             navigator.clipboard.writeText(productURL)
                 .then(() => {
                     alert('Ссылка на товар скопирована:\n' + productURL);

@@ -10,12 +10,15 @@ function attachFavoriteHandlers() {
                 const res = await fetch(`/api/v1/favorites/${productId}`, {
                     method,
                 });
-                if (!res.ok) throw new Error();
+                if (!res.ok) {
+                    const errJson = await res.json();
+                    alert(errJson.error || 'Ошибка при обновлении избранного');
+                    throw new Error(errJson.error);
+                }
                 icon.classList.toggle('fas', !isFav);
                 icon.classList.toggle('far', isFav);
-            } catch {
-                const error = new Error('Не удалось обновить избранное');
-                console.error(error);
+            } catch (err) {
+                console.error('Не удалось обновить избранное:', err);
             }
         };
     });

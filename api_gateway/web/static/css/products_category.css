@@ -146,6 +146,20 @@ body {
     margin-bottom: 10px;
 }
 
+.category-link, .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #FFB6C1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.category-link:hover, .brand-link:hover {
+    gap: 12px;
+}
+
 .action-btn {
     width: 36px;
     height: 36px;

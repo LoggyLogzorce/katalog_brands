@@ -15,6 +15,16 @@ func SelectUser(userID, role string) (models.User, error) {
 	return user, nil
 }
 
+func SelectUsers(data []uint64, limit int) ([]models.User, error) {
+	var users []models.User
+	err := db.DB().Limit(limit).Find(&users, data).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func UpdateRoleUser(userID, role, updateRole string) error {
 	err := db.DB().Model(&models.User{}).
 		Where("id = ? and role=?", userID, role).

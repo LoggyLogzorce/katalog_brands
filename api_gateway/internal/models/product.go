@@ -12,6 +12,11 @@ type ProfileProductResponse struct {
 	ViewHistory []Product `json:"view_history"`
 }
 
+type ProductResponse struct {
+	Product Product  `json:"product"`
+	Reviews []Review `json:"reviews"`
+}
+
 type Product struct {
 	ID          uint64        `json:"product_id"`
 	BrandID     uint64        `json:"brand_id"`

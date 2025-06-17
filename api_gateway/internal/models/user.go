@@ -9,3 +9,7 @@ type UserData struct {
 	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type UserDataResponse struct {
+	UsersID []uint64 `json:"users_id"`
+}
