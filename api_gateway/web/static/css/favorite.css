@@ -122,6 +122,22 @@ body {
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
+.category-products, .brand-products {
+    color: #777;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.category-link, .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #FFB6C1;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
 .item-image {
     width: 200px;
     height: 200px;

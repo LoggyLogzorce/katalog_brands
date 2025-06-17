@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"time"
 	"user_service/internal/db"
 	"user_service/internal/models"
@@ -46,4 +48,30 @@ func CreateView(userID, productID uint64) error {
 	}
 
 	return nil
+}
+
+func SelectView(userID, productID uint64) (bool, error) {
+	now := time.Now()
+	startOfDay := time.Date(
+		now.Year(), now.Month(), now.Day(),
+		0, 0, 0, 0,
+		now.Location(),
+	)
+
+	var hist models.History
+	err := db.DB().
+		Where("user_id = ? AND product_id = ? AND viewed_at >= ?", userID, productID, startOfDay).
+		First(&hist).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// не смотрел сегодня
+			return false, nil
+		}
+		// какая‑то другая ошибка при запросе
+		return false, err
+	}
+	// запись есть
+	return true, nil
 }

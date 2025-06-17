@@ -39,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
               ${item.price.toLocaleString('ru-RU')} ₽
             </div>
             <div class="item-actions">
+            <a href="/brand/${item.brand.name}/product/${item.product_id}" class="category-link">
+                    Подробнее <i class="fas fa-arrow-right"></i>
+                </a>
                 <div class="action-btn share-btn" data-product-id="${item.product_id}" data-brand-name="${item.brand.name}">
                     <i class="fas fa-share-alt"></i>
                 </div>

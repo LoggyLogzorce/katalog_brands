@@ -161,6 +161,10 @@ func ViewHistoryHandler(c *gin.Context) {
 
 func CreateViewHandler(c *gin.Context) {
 	userID := c.GetString("userID")
+	if userID == "0" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Unauthorized"})
+		return
+	}
 	c.Request.Header.Set("X-User-ID", userID)
 
 	status, _, _, err := proxyTo(c, "http://localhost:8082", "", nil)
@@ -170,13 +174,13 @@ func CreateViewHandler(c *gin.Context) {
 		return
 	}
 
-	if status != http.StatusOK {
+	if status != http.StatusOK && status != http.StatusCreated {
 		log.Println("CreateViewHandler: User Service вернул статус", status)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось добавить просмотр товара"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{})
+	c.JSON(status, gin.H{})
 }
 
 func DeleteViewHandler(c *gin.Context) {

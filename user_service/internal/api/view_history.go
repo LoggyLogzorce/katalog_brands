@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"strconv"
 	"user_service/internal/storage"
 )
@@ -45,13 +46,25 @@ func CreateViewProductHandler(c *gin.Context) {
 		return
 	}
 
+	ok, err := storage.SelectView(userIdUint, productIDUint)
+	if err != nil {
+		log.Println("SelectView error:", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+		return
+	}
+	if ok {
+		// уже смотрел сегодня — ничего не делаем
+		c.JSON(http.StatusOK, gin.H{})
+		return
+	}
+
 	if err = storage.CreateView(userIdUint, productIDUint); err != nil {
 		log.Println("CreateViewProductHandler: ошибка добавления просмотра товара", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка добавления просмотра товара", "error_sys": err})
 		return
 	}
 
-	c.JSON(200, gin.H{})
+	c.JSON(201, gin.H{})
 }
 
 func DeleteViewProductHandler(c *gin.Context) {

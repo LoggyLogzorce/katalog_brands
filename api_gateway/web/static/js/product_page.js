@@ -209,4 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    fetch(`/api/v1/view-history/${productId}`, {
+        method: 'POST',
+    })
+        .then(res => {
+            if (!res.ok) console.warn('Не удалось записать историю просмотра');
+        })
+        .catch(err => console.error('Ошибка при отправке истории просмотра:', err));
 });
