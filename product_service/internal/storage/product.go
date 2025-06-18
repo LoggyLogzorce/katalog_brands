@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"gorm.io/gorm"
 	"product_service/internal/db"
 	"product_service/internal/models"
 )
@@ -138,6 +139,20 @@ func GetProducts(status string, limit int) ([]models.Product, error) {
 func GetProduct(productID, brandID, status string) (models.Product, error) {
 	var product models.Product
 
+	if status == "creator" {
+		err := db.DB().
+			Preload("ProductUrls").
+			Preload("Category").
+			Where("id=? and brand_id=?", productID, brandID).
+			First(&product).
+			Error
+		if err != nil {
+			return models.Product{}, err
+		}
+
+		return product, nil
+	}
+
 	err := db.DB().
 		Preload("ProductUrls").
 		Preload("Category").
@@ -164,4 +179,94 @@ func GetProductsInBrands(brandsID []uint64) ([]models.Product, error) {
 	}
 
 	return products, nil
+}
+
+func CreateProduct(data models.Product, urls []models.ProductUrls) error {
+	product := models.Product{
+		BrandID:     data.BrandID,
+		CategoryID:  data.CategoryID,
+		Name:        data.Name,
+		Description: data.Description,
+		Price:       data.Price,
+		Status:      data.Status,
+		CreatedAt:   data.CreatedAt,
+	}
+	err := db.DB().Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&product).Error; err != nil {
+			return err
+		}
+
+		for i, _ := range urls {
+			urls[i].ProductID = product.ID
+		}
+
+		if err := db.DB().Create(&urls).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return err
+}
+
+func DeleteProduct(brandID, productID string) error {
+	err := db.DB().Transaction(func(tx *gorm.DB) error {
+		if err := tx.
+			Model(&models.ProductUrls{}).
+			Where("product_id = ?", productID).
+			Delete(nil).
+			Error; err != nil {
+			return err
+		}
+
+		if err := tx.
+			Model(&models.Product{}).
+			Where("id = ? AND brand_id = ?", productID, brandID).
+			Delete(nil).
+			Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+	return err
+}
+
+func UpdateProduct(data models.Product) error {
+	product := models.Product{
+		ID:          data.ID,
+		BrandID:     data.BrandID,
+		CategoryID:  data.CategoryID,
+		Name:        data.Name,
+		Description: data.Description,
+		Price:       data.Price,
+		Status:      data.Status,
+		CreatedAt:   data.CreatedAt,
+	}
+	err := db.DB().Transaction(func(tx *gorm.DB) error {
+		if err := tx.Save(&product).Error; err != nil {
+			return err
+		}
+
+		if data.ProductUrls == nil {
+			return nil
+		}
+
+		if err := tx.
+			Model(&models.ProductUrls{}).
+			Where("product_id = ?", data.ID).
+			Delete(nil).
+			Error; err != nil {
+			return err
+		}
+
+		if err := db.DB().Create(&data.ProductUrls).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return err
 }

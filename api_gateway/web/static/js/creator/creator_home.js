@@ -53,8 +53,95 @@ document.addEventListener('DOMContentLoaded', () => {
             grid.innerHTML = '<p style="padding:20px">Ошибка загрузки брендов.</p>';
         });
 
-    document.querySelector('.create-brand-btn').addEventListener('click', () => {
-        // Перейти на форму создания
-        window.location.href = '/brand/create';
+    const openBtn = document.getElementById('createBrandBtn');
+    const modal = document.getElementById('createBrandModal');
+    const closeBtn = document.querySelector('.close-modal');
+    const cancelBtn = document.getElementById('cancelCreateBrand');
+    const form = document.getElementById('createBrandForm');
+    const logoInput = document.getElementById('brandLogoInput');
+    const logoPreview = document.getElementById('logoPreview');
+
+    // Открыть модалку и заполнить текущими данными
+    openBtn.addEventListener('click', () => {
+        modal.classList.add('active');
+    });
+
+    // Закрыть модалку
+    function closeModal() {
+        modal.classList.remove('active');
+    }
+
+    // События закрытия
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // Закрыть при клике вне модального окна
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Закрыть по клавише Esc
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    // Предпросмотр логотипа при выборе файла
+    logoInput.addEventListener('change', function(e) {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                logoPreview.src = e.target.result;
+                logoPreview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Отправка формы
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+
+        const url = `/api/v1/creator/brand/create`;
+        const formData = new FormData(form);
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
+        try {
+            // Отключаем кнопку «Сохранить» на время запроса
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Сохраняем...';
+
+            const response = await fetch(url, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include', // если нужны куки
+            });
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.error || 'Ошибка сохранения');
+            }
+
+            const updated = await response.json();
+            // Закрываем модалку
+            closeModal();
+
+            alert('Бренд успешно создан!');
+
+            window.location.href = `/creator/brand/${encodeURIComponent(updated.name)}`;
+        } catch (err) {
+            console.error(err);
+            alert(err.message);
+        } finally {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Сохранить';
+        }
     });
 });

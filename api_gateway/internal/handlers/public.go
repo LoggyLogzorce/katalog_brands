@@ -59,6 +59,19 @@ func RegisterHandler(c *gin.Context) {
 	})
 }
 
+func LogoutHandler(c *gin.Context) {
+	c.SetCookie(
+		"access_token",
+		"",
+		-1,
+		"/",
+		"localhost",
+		true,
+		true,
+	)
+	c.Redirect(http.StatusSeeOther, "/")
+}
+
 func ProfileHandler(c *gin.Context) {
 	role := c.GetString("role")
 	if role == "guest" {

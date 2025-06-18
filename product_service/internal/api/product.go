@@ -2,13 +2,13 @@ package api
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
 	"product_service/internal/models"
 	"product_service/internal/storage"
 	"strconv"
+	"time"
 )
 
 type Request struct {
@@ -34,7 +34,7 @@ type BrandCount struct {
 	Count   int    `json:"count"`
 }
 
-func GetProducts(c *gin.Context) {
+func GetProductsHandler(c *gin.Context) {
 	status := c.Param("status")
 	count := c.Query("count")
 	if count != "" {
@@ -44,7 +44,7 @@ func GetProducts(c *gin.Context) {
 		}
 		products, err := storage.GetProducts(status, limitInt)
 		if err != nil {
-			log.Println("GetProduct: ошибка получения списка товаров", err)
+			log.Println("GetProductHandler: ошибка получения списка товаров", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения списка товаров"})
 			return
 		}
@@ -56,7 +56,7 @@ func GetProducts(c *gin.Context) {
 	var data Request
 	var resp Response
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
-		log.Println("GetProduct: ошибка получения данных из запроса", err)
+		log.Println("GetProductHandler: ошибка получения данных из запроса", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных из запроса"})
 		return
 	}
@@ -64,7 +64,7 @@ func GetProducts(c *gin.Context) {
 	if len(data.AllProducts) != 0 {
 		products, err := storage.SelectProduct(data.AllProducts, status)
 		if err != nil {
-			log.Println("GetProduct: ошибка получения данных о продуктах", err)
+			log.Println("GetProductHandler: ошибка получения данных о продуктах", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных о продуктах"})
 			return
 		}
@@ -74,7 +74,7 @@ func GetProducts(c *gin.Context) {
 	if len(data.BrandProducts) != 0 {
 		brandProducts, err := storage.SelectProduct(data.BrandProducts, status)
 		if err != nil {
-			log.Println("GetProduct: ошибка получения данных о продуктах бренда", err)
+			log.Println("GetProductHandler: ошибка получения данных о продуктах бренда", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных о продуктах"})
 			return
 		}
@@ -84,7 +84,7 @@ func GetProducts(c *gin.Context) {
 	if len(data.Favorite) != 0 {
 		productsFavorite, err := storage.SelectProduct(data.Favorite, status)
 		if err != nil {
-			log.Println("GetProduct: ошибка получения данных об избранных", err)
+			log.Println("GetProductHandler: ошибка получения данных об избранных", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об избранных"})
 			return
 		}
@@ -98,7 +98,7 @@ func GetProducts(c *gin.Context) {
 	if len(data.ViewHistory) != 0 {
 		productsViewHistory, err := storage.SelectProduct(data.ViewHistory, status)
 		if err != nil {
-			log.Println("GetProduct: ошибка получения данных об истории просмотра", err)
+			log.Println("GetProductHandler: ошибка получения данных об истории просмотра", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об истории просмотра"})
 			return
 		}
@@ -109,13 +109,13 @@ func GetProducts(c *gin.Context) {
 
 }
 
-func GetProductInCategory(c *gin.Context) {
+func GetProductInCategoryHandler(c *gin.Context) {
 	categoryID := c.Param("id")
 	productStatus := c.Param("status")
 
 	products, err := storage.SelectProductsInCategory(categoryID, productStatus)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		log.Println("GetProductInCategory: ошибка получения данных об товаров из категории", categoryID, err)
+		log.Println("GetProductInCategoryHandler: ошибка получения данных об товаров из категории", categoryID, err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об истории просмотра"})
 		return
 	}
@@ -123,13 +123,13 @@ func GetProductInCategory(c *gin.Context) {
 	c.JSON(200, products)
 }
 
-func GetProductInBrand(c *gin.Context) {
+func GetProductInBrandHandler(c *gin.Context) {
 	brandID := c.Param("id")
 	productStatus := c.Param("status")
 
 	products, err := storage.SelectProductsInBrand(brandID, productStatus)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		log.Println("GetProductInBrand: ошибка получения данных об товарах бренда", brandID, err)
+		log.Println("GetProductInBrandHandler: ошибка получения данных об товарах бренда", brandID, err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об истории просмотра"})
 		return
 	}
@@ -137,10 +137,10 @@ func GetProductInBrand(c *gin.Context) {
 	c.JSON(200, products)
 }
 
-func CountProductInBrand(c *gin.Context) {
+func CountProductInBrandHandler(c *gin.Context) {
 	var req BrandRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		log.Println("CountProductInBrand: некоректный запрос", err)
+		log.Println("CountProductInBrandHandler: некоректный запрос", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "некорректный запрос"})
 		return
 	}
@@ -149,7 +149,7 @@ func CountProductInBrand(c *gin.Context) {
 
 	counts, err := storage.GetProductCountsByBrand(req.BrandIDs, role)
 	if err != nil {
-		log.Println("CountProductInBrand: ошибка при получении данных", err)
+		log.Println("CountProductInBrandHandler: ошибка при получении данных", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка при получении данных"})
 		return
 	}
@@ -165,14 +165,14 @@ func CountProductInBrand(c *gin.Context) {
 	c.JSON(200, result)
 }
 
-func GetProduct(c *gin.Context) {
+func GetProductHandler(c *gin.Context) {
 	productID := c.Param("pId")
 	brandID := c.Param("id")
 	status := c.Query("status")
 
 	product, err := storage.GetProduct(productID, brandID, status)
 	if err != nil {
-		log.Println("GetProduct: ошибка при получении данных продукта", err)
+		log.Println("GetProductHandler: ошибка при получении данных продукта", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка при получении данных продукта"})
 		return
 	}
@@ -180,17 +180,17 @@ func GetProduct(c *gin.Context) {
 	c.JSON(200, product)
 }
 
-func GetProductInBrands(c *gin.Context) {
+func GetProductInBrandsHandler(c *gin.Context) {
 	var data BrandRequest
 	if err := c.ShouldBindJSON(&data); err != nil {
-		log.Println("GetProductInBrands: некоректный запрос", err)
+		log.Println("GetProductInBrandsHandler: некоректный запрос", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "некорректный запрос"})
 		return
 	}
 
 	products, err := storage.GetProductsInBrands(data.BrandIDs)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		log.Println("GetProductInBrands: ошибка получения данных об товарах брендов", err)
+		log.Println("GetProductInBrandsHandler: ошибка получения данных об товарах брендов", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об товарах брендов"})
 		return
 	}
@@ -205,8 +205,6 @@ func GetProductInBrands(c *gin.Context) {
 		}
 	}
 
-	fmt.Println(mp)
-
 	var resp []models.BrandsProductIds
 
 	for k, v := range mp {
@@ -217,4 +215,74 @@ func GetProductInBrands(c *gin.Context) {
 	}
 
 	c.JSON(200, resp)
+}
+
+func CreateProductHandler(c *gin.Context) {
+	var product models.Product
+	if err := c.ShouldBindBodyWithJSON(&product); err != nil {
+		log.Println("CreateProductHandler: не удалось получить данные из запроса", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить данные из запроса"})
+		return
+	}
+
+	product.CreatedAt = time.Now()
+	product.Status = "pending"
+
+	urls := product.ProductUrls
+
+	err := storage.CreateProduct(product, urls)
+	if err != nil {
+		log.Println("CreateProductHandler: не удалось сохранить товар", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось сохранить товар"})
+		return
+	}
+
+	c.JSON(201, gin.H{})
+}
+
+func DeleteProductHandler(c *gin.Context) {
+	brandID := c.Param("id")
+	productID := c.Param("pId")
+
+	err := storage.DeleteProduct(brandID, productID)
+	if err != nil {
+		log.Println("DeleteProductHandler: не удалось удалить товар", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить товар"})
+		return
+	}
+
+	c.JSON(200, gin.H{})
+}
+
+func UpdateProductHandler(c *gin.Context) {
+	var data models.Product
+	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
+		log.Println("UpdateProductHandler: не удалось получить данные из запроса", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить данные из запроса"})
+		return
+	}
+
+	productID := c.Param("id")
+	productIdUint, err := strconv.ParseUint(productID, 10, 64)
+	if err != nil {
+		log.Println("UpdateProductHandler: ошибка преобразования productID в uint64", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка преобразования productID в uint64"})
+		return
+	}
+
+	data.ID = productIdUint
+	data.Status = "pending"
+
+	for i := range data.ProductUrls {
+		data.ProductUrls[i].ProductID = data.ID
+	}
+
+	err = storage.UpdateProduct(data)
+	if err != nil {
+		log.Println("UpdateProductHandler: не удалось обновить данные товара", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось обновить данные товара"})
+		return
+	}
+
+	c.JSON(200, gin.H{})
 }

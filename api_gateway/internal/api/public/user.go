@@ -17,7 +17,7 @@ func ProfileHandler(c *gin.Context) {
 	c.Request.Header.Set("X-User-ID", userID)
 	c.Request.Header.Set("X-Role", role)
 
-	status, _, body, err := api.ProxyTo(c, "http://localhost:8082", "", nil)
+	status, _, body, err := api.ProxyTo(c, "http://localhost:8082", "", "", nil)
 	if err != nil {
 		log.Println("ProfileHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -60,7 +60,7 @@ func ProfileHandler(c *gin.Context) {
 		return
 	}
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8083", "/api/v1/products/approved", bytes.NewBuffer(productsIDJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8083", "", "/api/v1/products/approved", bytes.NewBuffer(productsIDJson))
 	if err != nil {
 		log.Println("ProfileHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
@@ -98,7 +98,7 @@ func ProfileHandler(c *gin.Context) {
 		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
 	}
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8084", "/api/v1/brand", bytes.NewReader(brandsIDJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8084", "", "/api/v1/brand", bytes.NewReader(brandsIDJson))
 	if err != nil {
 		log.Println("BrandsHandler: ошибка вызова Brand Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Brand Service недоступен"})
@@ -155,7 +155,7 @@ func UpdateRoleHandler(c *gin.Context) {
 	c.Request.Header.Set("X-User-ID", userID)
 	c.Request.Header.Set("X-Role", role)
 
-	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", nil)
+	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", "", nil)
 	if err != nil {
 		log.Println("UpdateRoleHandler: не удалось обновить роль пользователя", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "не удалось изменить роль пользователя"})

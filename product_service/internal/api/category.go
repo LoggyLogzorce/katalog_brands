@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func GetCategories(c *gin.Context) {
+func GetCategoriesHandler(c *gin.Context) {
 	limit := c.Query("count")
 
 	limitInt, err := strconv.Atoi(limit)
@@ -17,7 +17,7 @@ func GetCategories(c *gin.Context) {
 
 	categories, err := storage.SelectCategories(limitInt)
 	if err != nil {
-		log.Println("GetCategories: ошибка получения списка категорий", err)
+		log.Println("GetCategoriesHandler: ошибка получения списка категорий", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка получения списка категорий"})
 	}
 

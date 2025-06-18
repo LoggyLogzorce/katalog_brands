@@ -207,6 +207,191 @@ body {
     font-size: 1rem;
 }
 
+/* Базовые стили для модального окна */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+    position: relative;
+}
+
+.modal-overlay.active .modal {
+    transform: translateY(0);
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    color: #444;
+    font-size: 1.8rem;
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #FFB6C1;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Стили для формы */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: #FFB6C1;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 182, 193, 0.3);
+}
+
+/* Кнопки */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.btn-primary {
+    background: #FFB6C1;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #ff9aad;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* Кнопка закрытия */
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #777;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
+    color: #FFB6C1;
+}
+
+/* Стили для загрузки файлов */
+.file-input-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.file-input-label {
+    display: block;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px dashed #e0e0e0;
+    color: #777;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.file-input-label:hover {
+    background: #f0f0f0;
+    border-color: #FFB6C1;
+    color: #FFB6C1;
+}
+
+.file-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.preview-container {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.logo-preview {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 50%;
+    border: 2px dashed #FFB6C1;
+    padding: 5px;
+    margin: 10px auto;
+    display: none;
+}
+
 /* Адаптивность */
 @media (max-width: 992px) {
     .section-title {
@@ -223,6 +408,16 @@ body {
     .section-title {
         font-size: 1.8rem;
     }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions .btn {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -236,5 +431,9 @@ body {
 
     .stat-card {
         min-width: 100%;
+    }
+
+    .modal {
+        padding: 20px;
     }
 }

@@ -17,7 +17,7 @@ func CreateReviewHandler(c *gin.Context) {
 	}
 	c.Request.Header.Set("X-User-ID", userID)
 
-	status, _, _, err := api.ProxyTo(c, "http://localhost:8085", "", nil)
+	status, _, _, err := api.ProxyTo(c, "http://localhost:8085", "", "", nil)
 	if err != nil {
 		log.Println("CreateReview: ошибка вызова Review Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})

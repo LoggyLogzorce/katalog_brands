@@ -9,7 +9,7 @@ import (
 )
 
 // ProxyTo Проксирование запроса к микросервису
-func ProxyTo(c *gin.Context, target string, requestURI string, body io.Reader) (int, http.Header, []byte, error) {
+func ProxyTo(c *gin.Context, target string, requestMethod, requestURI string, body io.Reader) (int, http.Header, []byte, error) {
 	if body == nil {
 		body = c.Request.Body
 	}
@@ -17,8 +17,12 @@ func ProxyTo(c *gin.Context, target string, requestURI string, body io.Reader) (
 	if requestURI == "" {
 		requestURI = c.Request.RequestURI
 	}
+
+	if requestMethod == "" {
+		requestMethod = c.Request.Method
+	}
 	client := &http.Client{}
-	req, _ := http.NewRequest(c.Request.Method, target+requestURI, body)
+	req, _ := http.NewRequest(requestMethod, target+requestURI, body)
 	req.Header = c.Request.Header
 
 	resp, err := client.Do(req)

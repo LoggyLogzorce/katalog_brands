@@ -1,0 +1,309 @@
+/* Стили для модального окна */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    width: 600px;
+    max-width: 95%;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    transform: translateY(-30px);
+    transition: transform 0.4s ease;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-overlay.active .modal {
+    transform: translateY(0);
+}
+
+.modal h2 {
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-size: 1.8rem;
+    text-align: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #FF6B8B;
+}
+
+/* Стили для формы */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background: #f8f9fa;
+}
+
+.form-control:focus {
+    border-color: #FF6B8B;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 107, 139, 0.2);
+    background: #fff;
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Кнопки */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: #FF6B8B;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #ff5578;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.open-modal-btn {
+    padding: 15px 40px;
+    background: #FF6B8B;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(255, 107, 139, 0.3);
+}
+
+.open-modal-btn:hover {
+    background: #ff5578;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 107, 139, 0.4);
+}
+
+/* Кнопка закрытия */
+.close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: color 0.3s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-modal:hover {
+    color: #FF6B8B;
+    background: #fff0f5;
+}
+
+/* Стили для загрузки файлов */
+.file-input-container {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.file-input-label {
+    display: block;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px dashed #e0e0e0;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.file-input-label:hover {
+    background: #f0f0f0;
+    border-color: #FF6B8B;
+    color: #FF6B8B;
+}
+
+.file-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.image-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s;
+}
+
+.image-preview:hover {
+    transform: translateY(-5px);
+    border-color: #FF6B8B;
+    box-shadow: 0 5px 15px rgba(255, 107, 139, 0.3);
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #e74c3c;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.remove-image:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .modal {
+        padding: 20px;
+        width: 90%;
+    }
+
+    .modal h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .preview-container {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal {
+        padding: 15px;
+    }
+
+    .form-control {
+        padding: 12px 15px;
+    }
+
+    .file-input-label {
+        padding: 14px;
+    }
+}

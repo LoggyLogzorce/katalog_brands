@@ -10,13 +10,16 @@ func SetRouters() *gin.Engine {
 
 	apiGroup := r.Group("/api/v1")
 	{
-		apiGroup.GET("/products/:status", api.GetProducts)
-		apiGroup.GET("/categories", api.GetCategories)
-		apiGroup.GET("/category/:id/products/:status", api.GetProductInCategory)
-		apiGroup.GET("/brand/:id/products/:status", api.GetProductInBrand)
-		apiGroup.GET("/brands/products", api.GetProductInBrands)
-		apiGroup.GET("/brand/:id/product/:pId", api.GetProduct)
-		apiGroup.GET("/brands/count-product", api.CountProductInBrand)
+		apiGroup.GET("/products/:status", api.GetProductsHandler)
+		apiGroup.GET("/categories", api.GetCategoriesHandler)
+		apiGroup.GET("/category/:id/products/:status", api.GetProductInCategoryHandler)
+		apiGroup.GET("/brand/:id/products/:status", api.GetProductInBrandHandler)
+		apiGroup.GET("/brands/products", api.GetProductInBrandsHandler)
+		apiGroup.GET("/brand/:id/product/:pId", api.GetProductHandler)
+		apiGroup.DELETE("/brand/:id/product/:pId", api.DeleteProductHandler)
+		apiGroup.GET("/brands/count-product", api.CountProductInBrandHandler)
+		apiGroup.POST("/product/create", api.CreateProductHandler)
+		apiGroup.PUT("/product/:id", api.UpdateProductHandler)
 	}
 
 	return r

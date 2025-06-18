@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             countReviews += pr.rating.count_review
 
         }
-        let avg_rating = rating / countReviews
+        let avg_rating = rating / countReviews || 0
 
         document.querySelector('.stat-card.rating .stat-value').textContent = avg_rating.toFixed(1);
         document.querySelector('.stat-card.rating .stat-label').textContent = 'Рейтинг';

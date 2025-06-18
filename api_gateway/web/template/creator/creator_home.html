@@ -9,7 +9,7 @@
     <div class="section">
         <div class="section-header">
             <h2 class="section-title">Мои бренды</h2>
-            <button class="create-brand-btn">
+            <button class="create-brand-btn" id="createBrandBtn">
                 <i class="fas fa-plus"></i> Создать новый бренд
             </button>
         </div>
@@ -39,22 +39,42 @@
     </div>
 </div>
 
-<script>
-    // Функция для создания нового бренда
-    document.querySelector('.create-brand-btn').addEventListener('click', function() {
-        alert('Форма создания нового бренда будет открыта');
-        // Здесь можно добавить логику для открытия модального окна
-    });
+<div id="createBrandModal" class="modal-overlay">
+    <div class="modal">
+        <button class="close-modal">&times;</button>
+        <h2>Создать бренд</h2>
+        <form id="createBrandForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="brandNameInput">Название бренда</label>
+                <input type="text" id="brandNameInput" name="name" class="form-control" required>
+            </div>
 
-    // Функция для управления брендом
-    document.querySelectorAll('.brand-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const brandName = this.closest('.brand-card').querySelector('.brand-name').textContent;
-            alert(`Переход к управлению брендом: ${brandName}`);
-        });
-    });
-</script>
+            <div class="form-group">
+                <label for="brandDescInput">Описание</label>
+                <textarea id="brandDescInput" name="description" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="brandLogoInput">Логотип</label>
+                <div class="file-input-container">
+                    <div class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Выберите файл
+                    </div>
+                    <input type="file" id="brandLogoInput" name="logo" accept="image/*" class="file-input">
+                </div>
+                <div class="preview-container">
+                    <img id="logoPreview" src="" alt="Предпросмотр" class="logo-preview" style="display: none;">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="cancelCreateBrand" class="btn btn-secondary">Отменить</button>
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script src="/static/js/creator/creator_home.js"></script>
 
 {{ template "footer" . }}

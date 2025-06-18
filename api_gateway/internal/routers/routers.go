@@ -16,6 +16,7 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/", middleware.OptionalAuthMiddleware(), handlers.HomePage)
 	r.GET("/auth", handlers.AuthHandler)
 	r.GET("/register", handlers.RegisterHandler)
+	r.POST("/logout", handlers.LogoutHandler)
 	r.GET("/brands", middleware.OptionalAuthMiddleware(), handlers.BrandsHandler)
 	r.GET("/brand/:name", middleware.OptionalAuthMiddleware(), handlers.BrandPageHandler)
 	r.GET("/brand/:name/product/:id", middleware.OptionalAuthMiddleware(), handlers.ProductHandler)
@@ -29,6 +30,7 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	creatorGroup := r.Group("/creator", middleware.AuthMiddleware([]string{"creator"}))
 	{
 		creatorGroup.GET("/brands", handlers.HomePageCreator)
+		creatorGroup.GET("/brand/:name", handlers.BrandPageCreatorHandler)
 	}
 
 	r.NoRoute(middleware.OptionalAuthMiddleware(), handlers.PageNotFound)
@@ -76,6 +78,12 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 	creatorGroup := publicGroup.Group("/creator", middleware.AuthMiddleware([]string{"creator"}))
 	{
 		creatorGroup.GET("/brands", creator.BrandsCreatorHandler)
+		creatorGroup.GET("/brand/:name", creator.BrandHandler)
+		creatorGroup.PUT("/brand/:name/edit", creator.UpdateBrandHandler)
+		creatorGroup.POST("/brand/:name/create-product", creator.CreateProductHandler)
+		creatorGroup.POST("/brand/create", creator.CreateBrandHandler)
+		creatorGroup.DELETE("/brand/:name/product/:id", creator.DeleteProductHandler)
+		creatorGroup.PUT("/brand/:name/product/:id", creator.UpdateProductHandler)
 	}
 
 	return r

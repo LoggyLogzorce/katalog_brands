@@ -14,7 +14,7 @@ func ViewHistoryHandler(c *gin.Context) {
 	userID := c.GetString("userID")
 	c.Request.Header.Set("X-User-ID", userID)
 
-	status, _, body, err := api.ProxyTo(c, "http://localhost:8082", "", nil)
+	status, _, body, err := api.ProxyTo(c, "http://localhost:8082", "", "", nil)
 	if err != nil {
 		log.Println("ViewHistoryHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -51,7 +51,7 @@ func ViewHistoryHandler(c *gin.Context) {
 		return
 	}
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8083", "/api/v1/products/approved", bytes.NewBuffer(viewHistoryIDJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8083", "", "/api/v1/products/approved", bytes.NewBuffer(viewHistoryIDJson))
 	if err != nil {
 		log.Println("ViewHistoryHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
@@ -85,7 +85,7 @@ func ViewHistoryHandler(c *gin.Context) {
 		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
 	}
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8084", "/api/v1/brand", bytes.NewReader(brandsIDJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8084", "", "/api/v1/brand", bytes.NewReader(brandsIDJson))
 	if err != nil {
 		log.Println("BrandsHandler: ошибка вызова Brand Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Brand Service недоступен"})
@@ -114,7 +114,7 @@ func ViewHistoryHandler(c *gin.Context) {
 		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
 	}
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8085", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8085", "", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
 	if err != nil {
 		log.Println("ProductsHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -168,7 +168,7 @@ func CreateViewHandler(c *gin.Context) {
 	}
 	c.Request.Header.Set("X-User-ID", userID)
 
-	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", nil)
+	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", "", nil)
 	if err != nil {
 		log.Println("CreateViewHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -188,7 +188,7 @@ func DeleteViewHandler(c *gin.Context) {
 	userID := c.GetString("userID")
 	c.Request.Header.Set("X-User-ID", userID)
 
-	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", nil)
+	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", "", nil)
 	if err != nil {
 		log.Println("DeleteViewHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -208,7 +208,7 @@ func ClearViewHistoryHandler(c *gin.Context) {
 	userID := c.GetString("userID")
 	c.Request.Header.Set("X-User-ID", userID)
 
-	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", nil)
+	status, _, _, err := api.ProxyTo(c, "http://localhost:8082", "", "", nil)
 	if err != nil {
 		log.Println("ClearViewHistoryHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})

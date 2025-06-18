@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"api_gateway/internal/handlers"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -25,7 +26,8 @@ func AuthMiddleware(requiredRole []string) gin.HandlerFunc {
 		}
 		if authCookie == "" || !strings.HasPrefix(authCookie, "Bearer ") {
 			log.Println("AuthMiddleware: нет токена или ошибочный формат")
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "нет токена"})
+			handlers.AuthHandler(c)
+			c.Abort()
 			return
 		}
 		tokenString := strings.TrimPrefix(authCookie, "Bearer ")

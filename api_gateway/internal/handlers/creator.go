@@ -18,3 +18,18 @@ func HomePageCreator(c *gin.Context) {
 		"Name":  first,
 	})
 }
+
+func BrandPageCreatorHandler(c *gin.Context) {
+	brandName := c.Param("name")
+	role := c.GetString("role")
+	name := c.GetString("name")
+	var first string
+	if len(name) > 0 {
+		first = string([]rune(name)[0])
+	}
+	c.HTML(http.StatusOK, "creator_brand.html", gin.H{
+		"title": brandName,
+		"Role":  role,
+		"Name":  first,
+	})
+}

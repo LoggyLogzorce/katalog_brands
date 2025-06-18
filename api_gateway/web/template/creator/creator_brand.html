@@ -1,0 +1,206 @@
+{{ template "base" . }}
+    <link href="/static/css/creator/creator_brand.css" rel="stylesheet">
+    <link href="/static/css/creator/modal.css" rel="stylesheet">
+
+</head>
+<body>
+
+{{ template "header" . }}
+
+<div class="container">
+    <div class="section">
+        <div class="section-header">
+            <h1 class="section-title">Редактирование бренда</h1>
+        </div>
+
+        <div class="brand-edit-container">
+            <!-- Левая колонка - Информация о бренде -->
+            <div class="brand-info-card">
+                <div class="brand-logo-container">
+                    <img class="brand-logo">
+                </div>
+
+                <h2 class="brand-name"></h2>
+
+                <div class="moderation-status status-approved"></div>
+
+                <p class="brand-description"></p>
+
+                <div class="brand-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Дата создания:</span>
+                        <span class="meta-value"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Товаров в бренде:</span>
+                        <span class="meta-value"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Просмотры:</span>
+                        <span class="meta-value"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Средний рейтинг:</span>
+                        <span class="meta-value"> <i class="fas fa-star" style="color: #FFD700;"></i></span>
+                    </div>
+                </div>
+
+                <div class="actions-container">
+                    <button id="editBrandBtn" class="btn btn-outline">
+                        <i class="fas fa-edit"></i> Редактировать детали бренда
+                    </button>
+                </div>
+            </div>
+
+            <!-- Правая колонка - Товары бренда -->
+            <div class="brand-products-section">
+                <div class="products-header">
+                    <h3></h3>
+                    <button class="btn" id="createProductBtn">
+                        <i class="fas fa-plus"></i> Добавить товар
+                    </button>
+                </div>
+
+                <div class="products-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editBrandModal" class="modal-overlay">
+    <div class="modal">
+        <button class="close-modal">&times;</button>
+        <h2>Редактировать бренд</h2>
+        <form id="editBrandForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="brandNameInput">Название бренда</label>
+                <input type="text" id="brandNameInput" name="name" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="brandDescInput">Описание</label>
+                <textarea id="brandDescInput" name="description" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="brandLogoInput">Логотип</label>
+                <div class="file-input-container">
+                    <div class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Выберите файл
+                    </div>
+                    <input type="file" id="brandLogoInput" name="logo" accept="image/*" class="file-input">
+                </div>
+                <div class="preview-container">
+                    <img id="logoPreview" src="" alt="Предпросмотр" class="logo-preview" style="display: none;">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="cancelEditBrand" class="btn btn-secondary">Отменить</button>
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="createProductModal" class="modal-overlay">
+    <div class="modal">
+        <button class="close-modal">&times;</button>
+        <h2>Создать новый товар</h2>
+        <form id="createProductForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="productName">Название товара</label>
+                <input type="text" id="productName" name="name" class="form-control" placeholder="Введите название товара" required />
+            </div>
+
+            <div class="form-group">
+                <label for="productDesc">Описание</label>
+                <textarea id="productDesc" name="description" rows="4" class="form-control" placeholder="Детальное описание товара..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="productPrice">Цена</label>
+                <input type="number" id="productPrice" name="price" min="0" step="0.01" class="form-control" placeholder="0.00" required />
+            </div>
+
+            <div class="form-group">
+                <label for="productCategory">Категория</label>
+                <select id="productCategory" name="category_id" class="form-control" required>
+                    <option value="">Выберите категорию</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productImages">Фотографии</label>
+                <div class="file-input-container">
+                    <div class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Выберите фотографии
+                    </div>
+                    <input type="file" id="productImages" name="images" multiple accept="image/*" class="file-input">
+                </div>
+                <div class="preview-container" id="imagesPreviewContainer"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="cancelCreateProduct" class="btn btn-secondary">Отменить</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Сохранить товар
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editProductModal" class="modal-overlay">
+    <div class="modal">
+        <button class="close-modal">&times;</button>
+        <h2>Создать новый товар</h2>
+        <form id="editProductForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="newProductName">Название товара</label>
+                <input type="text" id="newProductName" name="name" class="form-control" placeholder="Введите название товара" required />
+            </div>
+
+            <div class="form-group">
+                <label for="newProductDesc">Описание</label>
+                <textarea id="newProductDesc" name="description" rows="4" class="form-control" placeholder="Детальное описание товара..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="newProductPrice">Цена</label>
+                <input type="number" id="newProductPrice" name="price" min="0" step="0.01" class="form-control" placeholder="0.00" required />
+            </div>
+
+            <div class="form-group">
+                <label for="newProductCategory">Категория</label>
+                <select id="newProductCategory" name="category_id" class="form-control" required>
+                    <option value="">Выберите категорию</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="newProductImages">Фотографии</label>
+                <div class="file-input-container">
+                    <div class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Выберите фотографии
+                    </div>
+                    <input type="file" id="newProductImages" name="images" multiple accept="image/*" class="file-input">
+                </div>
+                <div class="preview-container" id="newImagesPreviewContainer"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" id="cancelEditProduct" class="btn btn-secondary">Отменить</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Сохранить изменения
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/creator/creator_brand.js"></script>
+<script src="/static/js/creator/create_product.js"></script>
+<script src="/static/js/creator/edit_product.js"></script>
+
+{{ template "footer" . }}

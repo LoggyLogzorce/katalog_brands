@@ -16,7 +16,7 @@ func ProductsHandler(c *gin.Context) {
 	count := c.Query("count")
 	url := fmt.Sprintf("/api/v1/products/approved?count=%s", count)
 
-	status, _, body, err := api.ProxyTo(c, "http://localhost:8083", url, nil)
+	status, _, body, err := api.ProxyTo(c, "http://localhost:8083", "", url, nil)
 	if err != nil {
 		log.Println("ProductsHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
@@ -50,7 +50,7 @@ func ProductsHandler(c *gin.Context) {
 		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
 	}
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8084", "/api/v1/brand", bytes.NewReader(brandsIDJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8084", "", "/api/v1/brand", bytes.NewReader(brandsIDJson))
 	if err != nil {
 		log.Println("BrandsHandler: ошибка вызова Brand Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Brand Service недоступен"})
@@ -73,7 +73,7 @@ func ProductsHandler(c *gin.Context) {
 	userID := c.GetString("userID")
 	c.Request.Header.Set("X-User-ID", userID)
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8082", "/api/v1/favorites", nil)
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8082", "", "/api/v1/favorites", nil)
 	if err != nil {
 		log.Println("ProductsHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -107,7 +107,7 @@ func ProductsHandler(c *gin.Context) {
 		log.Println("BrandsHandler: ошибка преобразования brandsID в JSON", err)
 	}
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8085", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8085", "", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
 	if err != nil {
 		log.Println("ProductsHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -162,8 +162,9 @@ func ProductsHandler(c *gin.Context) {
 func GetProductHandler(c *gin.Context) {
 	brandName := c.Param("name")
 	productId := c.Param("id")
+	prStatus := c.Query("status")
 	brandUrl := fmt.Sprintf("/api/v1/brand/%s", brandName)
-	status, _, body, err := api.ProxyTo(c, "http://localhost:8084", brandUrl, nil)
+	status, _, body, err := api.ProxyTo(c, "http://localhost:8084", "", brandUrl, nil)
 	if err != nil {
 		log.Println("GetProductHandler: ошибка вызова Brand Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Brand Service недоступен"})
@@ -183,8 +184,22 @@ func GetProductHandler(c *gin.Context) {
 		return
 	}
 
-	productUrl := fmt.Sprintf("/api/v1/brand/%v/product/%s?status=approved", brand.ID, productId)
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8083", productUrl, nil)
+	if prStatus == "" {
+		prStatus = "approved"
+	} else if prStatus == "creator" {
+		role := c.GetString("role")
+		if prStatus != role {
+			prStatus = "approved"
+		}
+	} else if prStatus == "admin" {
+		role := c.GetString("role")
+		if prStatus != role {
+			prStatus = "approved"
+		}
+	}
+
+	productUrl := fmt.Sprintf("/api/v1/brand/%v/product/%s?status=%s", brand.ID, productId, prStatus)
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8083", "", productUrl, nil)
 	if err != nil {
 		log.Println("GetProductHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})
@@ -207,7 +222,7 @@ func GetProductHandler(c *gin.Context) {
 	userID := c.GetString("userID")
 	c.Request.Header.Set("X-User-ID", userID)
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8082", "/api/v1/favorites", nil)
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8082", "", "/api/v1/favorites", nil)
 	if err != nil {
 		log.Println("GetProductHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -244,7 +259,7 @@ func GetProductHandler(c *gin.Context) {
 			log.Println("GetProductHandler: ошибка преобразования brandsID в JSON", err)
 		}
 
-		status, _, body, err = api.ProxyTo(c, "http://localhost:8085", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
+		status, _, body, err = api.ProxyTo(c, "http://localhost:8085", "", "/api/v1/get-reviews", bytes.NewReader(productsIDJson))
 		if err != nil {
 			log.Println("GetProductHandler: ошибка вызова User Service:", err)
 			c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})
@@ -281,7 +296,7 @@ func GetProductHandler(c *gin.Context) {
 	role := c.GetString("role")
 	c.Request.Header.Set("X-Role", role)
 
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8082", "/api/v1/user-data?count=5", bytes.NewReader(usersIdDataJson))
+	status, _, body, err = api.ProxyTo(c, "http://localhost:8082", "", "/api/v1/user-data?count=5", bytes.NewReader(usersIdDataJson))
 	if err != nil {
 		log.Println("GetProductHandler: ошибка вызова User Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "User Service недоступен"})

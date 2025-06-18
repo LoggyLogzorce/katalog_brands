@@ -42,12 +42,32 @@ func GetBrandInfoById(brandsID []uint64) ([]models.Brand, error) {
 	return brands, nil
 }
 
-func GetBrandByName(name string) (models.Brand, error) {
+func GetBrandByName(name, creatorID string) (models.Brand, error) {
 	var brand models.Brand
+
+	if creatorID != "" && creatorID != "0" {
+		err := db.DB().Where("name=? and creator_id=?", name, creatorID).First(&brand).Error
+		if err != nil {
+			return models.Brand{}, err
+		}
+
+		return brand, nil
+	}
+
 	err := db.DB().Where("name=?", name).First(&brand).Error
 	if err != nil {
 		return models.Brand{}, err
 	}
 
 	return brand, nil
+}
+
+func UpdateBrandInfo(brand models.Brand) error {
+	err := db.DB().Save(&brand).Error
+	return err
+}
+
+func CreateBrand(brand models.Brand) error {
+	err := db.DB().Create(&brand).Error
+	return err
 }
