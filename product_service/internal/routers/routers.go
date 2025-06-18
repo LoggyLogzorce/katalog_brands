@@ -14,6 +14,7 @@ func SetRouters() *gin.Engine {
 		apiGroup.GET("/categories", api.GetCategories)
 		apiGroup.GET("/category/:id/products/:status", api.GetProductInCategory)
 		apiGroup.GET("/brand/:id/products/:status", api.GetProductInBrand)
+		apiGroup.GET("/brands/products", api.GetProductInBrands)
 		apiGroup.GET("/brand/:id/product/:pId", api.GetProduct)
 		apiGroup.GET("/brands/count-product", api.CountProductInBrand)
 	}

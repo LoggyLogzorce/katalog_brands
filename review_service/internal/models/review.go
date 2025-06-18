@@ -14,3 +14,9 @@ type Review struct {
 func (_ *Review) TableName() string {
 	return "reviews"
 }
+
+type ProductReviewStat struct {
+	ProductID   uint64  `json:"product_id"`
+	AvgRating   float64 `json:"avg_rating"`
+	CountReview int     `json:"count_review"`
+}

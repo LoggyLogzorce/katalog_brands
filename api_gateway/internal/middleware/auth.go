@@ -19,14 +19,18 @@ type AuthInfo struct {
 // AuthMiddleware Мидлвэр для проверки JWT и роли
 func AuthMiddleware(requiredRole []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		auth := c.GetHeader("Authorization")
-		if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
+		authCookie, err := c.Cookie("access_token")
+		if err != nil {
+			log.Println("AuthMiddleware: Ошибка получения access_token")
+		}
+		if authCookie == "" || !strings.HasPrefix(authCookie, "Bearer ") {
+			log.Println("AuthMiddleware: нет токена или ошибочный формат")
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "нет токена"})
 			return
 		}
-		tokenString := strings.TrimPrefix(auth, "Bearer ")
+		tokenString := strings.TrimPrefix(authCookie, "Bearer ")
 
-		req, err := http.NewRequest("GET", "http://localhost:8081/validate", nil)
+		req, err := http.NewRequest("GET", "http://localhost:8081/api/v1/validate", nil)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "ошибка запроса в auth-сервис"})
 			return
@@ -68,7 +72,9 @@ func AuthMiddleware(requiredRole []string) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", info.UserID)
+		userIDStr := strconv.FormatUint(info.UserID, 10)
+
+		c.Set("userID", userIDStr)
 		c.Set("role", info.Role)
 		c.Set("name", info.Name)
 

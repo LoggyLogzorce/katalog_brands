@@ -12,6 +12,7 @@ func SetRouters() *gin.Engine {
 
 	apiGroup.GET("/get-reviews", api.GetReviewsHandler)
 	apiGroup.POST("/create-review/:pID", api.CreateReviewHandler)
+	apiGroup.GET("product_reviews_stats", api.GetProductReviewsStatsHandler)
 
 	return r
 }

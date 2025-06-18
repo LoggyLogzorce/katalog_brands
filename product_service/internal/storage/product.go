@@ -72,12 +72,32 @@ func SelectProductsInBrand(brandID, productStatus string) ([]models.Product, err
 	return products, nil
 }
 
-func GetProductCountsByBrand(brandIDs []uint64) (map[uint64]int, error) {
+func GetProductCountsByBrand(brandIDs []uint64, role string) (map[uint64]int, error) {
 	type row struct {
 		BrandID uint64 `gorm:"column:brand_id"`
 		Count   int    `gorm:"column:count"`
 	}
 	var rows []row
+
+	if role == "creator" {
+		err := db.DB().
+			Model(&models.Product{}).
+			Select("brand_id, COUNT(*) AS count").
+			Where("brand_id IN ?", brandIDs).
+			Group("brand_id").
+			Scan(&rows).
+			Error
+		if err != nil {
+			return nil, err
+		}
+
+		// переводим в map
+		result := make(map[uint64]int, len(rows))
+		for _, r := range rows {
+			result[r.BrandID] = r.Count
+		}
+		return result, nil
+	}
 
 	err := db.DB().
 		Model(&models.Product{}).
@@ -129,4 +149,19 @@ func GetProduct(productID, brandID, status string) (models.Product, error) {
 	}
 
 	return product, nil
+}
+
+func GetProductsInBrands(brandsID []uint64) ([]models.Product, error) {
+	var products []models.Product
+
+	err := db.DB().
+		Preload("ProductUrls").
+		Preload("Category").
+		Where("brand_id in ?", brandsID).
+		Find(&products).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }

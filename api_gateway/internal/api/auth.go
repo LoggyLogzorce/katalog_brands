@@ -7,7 +7,7 @@ import (
 )
 
 func LoginHandler(c *gin.Context) {
-	status, _, _, err := proxyTo(c, "http://localhost:8081", "", nil)
+	status, _, _, err := ProxyTo(c, "http://localhost:8081", "", nil)
 	if err != nil {
 		log.Println("LoginHandler: ошибка вызова Auth Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Auth Service недоступен"})
@@ -24,7 +24,7 @@ func LoginHandler(c *gin.Context) {
 }
 
 func RegisterHandler(c *gin.Context) {
-	status, _, _, err := proxyTo(c, "http://localhost:8081", "", nil)
+	status, _, _, err := ProxyTo(c, "http://localhost:8081", "", nil)
 	if err != nil {
 		log.Println("RegisterHandler: ошибка вызова Auth Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Auth Service недоступен"})

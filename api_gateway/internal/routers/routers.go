@@ -2,13 +2,15 @@ package routers
 
 import (
 	"api_gateway/internal/api"
+	"api_gateway/internal/api/creator"
+	"api_gateway/internal/api/public"
 	"api_gateway/internal/handlers"
 	"api_gateway/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
 func SetStaticRouters(r *gin.Engine) *gin.Engine {
-	r.LoadHTMLGlob("web/template/*")
+	r.LoadHTMLGlob("web/template/**/*")
 	r.Static("/static", "./web/static")
 
 	r.GET("/", middleware.OptionalAuthMiddleware(), handlers.HomePage)
@@ -23,6 +25,12 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/profile", middleware.OptionalAuthMiddleware(), handlers.ProfileHandler)
 	r.GET("/favorites", middleware.OptionalAuthMiddleware(), handlers.FavoriteHandler)
 	r.GET("/view-history", middleware.OptionalAuthMiddleware(), handlers.ViewHistoryHandler)
+
+	creatorGroup := r.Group("/creator", middleware.AuthMiddleware([]string{"creator"}))
+	{
+		creatorGroup.GET("/brands", handlers.HomePageCreator)
+	}
+
 	r.NoRoute(middleware.OptionalAuthMiddleware(), handlers.PageNotFound)
 
 	return r
@@ -31,38 +39,43 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 func SetApiRouters(r *gin.Engine) *gin.Engine {
 	publicGroup := r.Group("/api/v1")
 	{
-		publicGroup.GET("/brands", api.BrandsHandler)
-		publicGroup.GET("/brand/:name", middleware.OptionalAuthMiddleware(), api.BrandHandler)
-		publicGroup.GET("/brand/:name/product/:id", middleware.OptionalAuthMiddleware(), api.GetProductHandler)
+		publicGroup.GET("/brands", public.BrandsHandler)
+		publicGroup.GET("/brand/:name", middleware.OptionalAuthMiddleware(), public.BrandHandler)
+		publicGroup.GET("/brand/:name/product/:id", middleware.OptionalAuthMiddleware(), public.GetProductHandler)
 
-		publicGroup.GET("/categories", api.CategoryHandler)
-		publicGroup.GET("/category/:id/products/:status", middleware.OptionalAuthMiddleware(), api.CategoryProductHandler)
+		publicGroup.GET("/categories", public.CategoryHandler)
+		publicGroup.GET("/category/:id/products/:status", middleware.OptionalAuthMiddleware(), public.CategoryProductHandler)
 
-		publicGroup.GET("/products/:status", middleware.OptionalAuthMiddleware(), api.ProductsHandler)
+		publicGroup.GET("/products/:status", middleware.OptionalAuthMiddleware(), public.ProductsHandler)
 
-		publicGroup.POST("/create-review/:pID", middleware.OptionalAuthMiddleware(), api.CreateReviewHandler)
+		publicGroup.POST("/create-review/:pID", middleware.OptionalAuthMiddleware(), public.CreateReviewHandler)
 
 		publicGroup.POST("/login", api.LoginHandler)
 		publicGroup.POST("/register", api.RegisterHandler)
-		publicGroup.GET("/profile", middleware.OptionalAuthMiddleware(), api.ProfileHandler)
+		publicGroup.GET("/profile", middleware.OptionalAuthMiddleware(), public.ProfileHandler)
 
 		favGroup := publicGroup.Group("/favorites", middleware.OptionalAuthMiddleware())
 		{
-			favGroup.GET("/", api.FavoriteHandler)
-			favGroup.POST("/:id", api.CreateFavoriteHandler)
-			favGroup.DELETE("/:id", api.DeleteFavoriteHandler)
-			favGroup.DELETE("/", api.ClearFavoriteHandler)
+			favGroup.GET("/", public.FavoriteHandler)
+			favGroup.POST("/:id", public.CreateFavoriteHandler)
+			favGroup.DELETE("/:id", public.DeleteFavoriteHandler)
+			favGroup.DELETE("/", public.ClearFavoriteHandler)
 		}
 
 		hisGroup := publicGroup.Group("/view-history", middleware.OptionalAuthMiddleware())
 		{
-			hisGroup.GET("/", api.ViewHistoryHandler)
-			hisGroup.POST("/:id", api.CreateViewHandler)
-			hisGroup.DELETE("/:id", api.DeleteViewHandler)
-			hisGroup.DELETE("/", api.ClearViewHistoryHandler)
+			hisGroup.GET("/", public.ViewHistoryHandler)
+			hisGroup.POST("/:id", public.CreateViewHandler)
+			hisGroup.DELETE("/:id", public.DeleteViewHandler)
+			hisGroup.DELETE("/", public.ClearViewHistoryHandler)
 		}
 
-		publicGroup.PUT("/update_role", middleware.OptionalAuthMiddleware(), api.UpdateRoleHandler)
+		publicGroup.PUT("/update_role", middleware.OptionalAuthMiddleware(), public.UpdateRoleHandler)
+	}
+
+	creatorGroup := publicGroup.Group("/creator", middleware.AuthMiddleware([]string{"creator"}))
+	{
+		creatorGroup.GET("/brands", creator.BrandsCreatorHandler)
 	}
 
 	return r

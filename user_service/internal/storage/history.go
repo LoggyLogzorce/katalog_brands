@@ -66,12 +66,35 @@ func SelectView(userID, productID uint64) (bool, error) {
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// не смотрел сегодня
 			return false, nil
 		}
-		// какая‑то другая ошибка при запросе
 		return false, err
 	}
-	// запись есть
 	return true, nil
+}
+
+func CountView(data []uint64) (int, error) {
+	var count int
+	err := db.DB().Model(models.History{}).Select("COUNT(*) as count").Where("product_id in ?", data).Find(&count).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+func GetProductViewsStats(productsID []uint64) ([]models.ProductViewStat, error) {
+	var rows []models.ProductViewStat
+	err := db.DB().
+		Model(&models.History{}).
+		Select("product_id, COUNT(*) AS views").
+		Where("product_id IN ?", productsID).
+		Group("product_id").
+		Scan(&rows).
+		Error
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+	return rows, nil
 }

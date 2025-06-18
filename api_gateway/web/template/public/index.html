@@ -1,0 +1,88 @@
+{{ template "base" . }}
+    <link href="/static/css/public/index.css" rel="stylesheet">
+</head>
+<body>
+<!-- Шапка -->
+{{ template "header" . }}
+
+<!-- Герой-секция с поиском -->
+<div class="container">
+    <div class="brand-header">
+        <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="CosmoBrands" class="brand-logo">
+        <h1 class="brand-title">Добро пожаловать в CosmoBrands!</h1>
+        <p class="brand-description">
+            Мы предлагаем широкий ассортимент товаров по доступным ценам.
+            Наш каталог - это место, где вы найдете всё, что нужно для вас.
+            У нас только лучшие бренды и проверенные производители.
+        </p>
+
+        <!-- Поле для поиска -->
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" placeholder="Поиск товаров, категорий, брендов..." class="search-input">
+                <button type="submit" class="search-btn">
+                    <i class="fas fa-search"></i> Найти
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Категории -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Категории</h2>
+            <a href="/categories" class="view-all">
+                Смотреть все
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="categories-grid"></div>
+    </div>
+</section>
+
+<!-- Бренды -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Бренды</h2>
+            <a href="/brands" class="view-all">
+                Смотреть все
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="brands-grid"></div>
+    </div>
+</section>
+
+<!-- Товары -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Товары</h2>
+            <a href="/products" class="view-all">
+                Смотреть все
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div id="products-list" class="products-grid"></div>
+    </div>
+</section>
+
+<!-- Подвал -->
+{{ template "footer" . }}
+
+<script src="/static/js/public/categories.js"></script>
+<script src="/static/js/public/brands.js"></script>
+<script src="/static/js/public/products.js"></script>
+<script src="/static/js/public/render_rating.js"></script>
+<script src="/static/js/public/search.js"></script>
+<script src="/static/js/public/fav_history.js"></script>
+<script src="/static/js/public/update_favorite.js"></script>
+
+</body>
+</html>

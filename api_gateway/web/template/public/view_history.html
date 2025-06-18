@@ -1,0 +1,29 @@
+{{ template "base" . }}
+<link href="/static/css/public/favorite.css" rel="stylesheet">
+</head>
+<body>
+<!-- Шапка -->
+{{ template "header" . }}
+
+<!-- Основной контент -->
+<div class="view-history-container">
+    <div class="view-history-header">
+        <h1 class="view-history-title">История просмотра</h1>
+    </div>
+
+    <div class="view-history-actions">
+        <button id="clear-all-btn" class="btn btn-outline">
+            <i class="fas fa-trash-alt"></i> Очистить историю
+        </button>
+    </div>
+
+    <div id="view-history-list" class="favorites-list">
+        <p id="loading-text">Загрузка…</p>
+    </div>
+</div>
+
+<!-- Подвал -->
+{{ template "footer" . }}
+
+<script src="/static/js/public/view_history.js"></script>
+<script src="/static/js/public/fav_history.js"></script>

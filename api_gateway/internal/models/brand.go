@@ -26,3 +26,8 @@ type BrandCount struct {
 	BrandID uint64 `json:"brand_id"`
 	Count   int    `json:"count"`
 }
+
+type BrandsProductIds struct {
+	BrandID    uint64   `json:"brand_id"`
+	ProductsId []uint64 `json:"products_id"`
+}

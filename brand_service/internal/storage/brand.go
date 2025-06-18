@@ -5,11 +5,19 @@ import (
 	"brand_service/internal/models"
 )
 
-func GetAllBrands(status string, limit int) ([]models.Brand, error) {
+func GetAllBrands(status, creatorID string, limit int) ([]models.Brand, error) {
 	var brands []models.Brand
 
 	if status == "all" {
 		err := db.DB().Limit(limit).Find(&brands).Error
+		if err != nil {
+			return nil, err
+		}
+		return brands, nil
+	}
+
+	if status == "creator" {
+		err := db.DB().Where("creator_id = ?", creatorID).Find(&brands).Error
 		if err != nil {
 			return nil, err
 		}

@@ -1,0 +1,60 @@
+{{ template "base" . }}
+    <link href="/static/css/creator/creator_home.css" rel="stylesheet">
+</head>
+<body>
+
+{{ template "header" . }}
+
+<div class="container">
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">Мои бренды</h2>
+            <button class="create-brand-btn">
+                <i class="fas fa-plus"></i> Создать новый бренд
+            </button>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value"></div>
+                <div class="stat-label">Всего брендов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value"></div>
+                <div class="stat-label">Товаров в брендах</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value"></div>
+                <div class="stat-label">Средний рейтинг</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value"></div>
+                <div class="stat-label">Просмотров</div>
+            </div>
+        </div>
+
+        <!-- Список брендов -->
+        <div class="brands-grid"></div>
+    </div>
+</div>
+
+<script>
+    // Функция для создания нового бренда
+    document.querySelector('.create-brand-btn').addEventListener('click', function() {
+        alert('Форма создания нового бренда будет открыта');
+        // Здесь можно добавить логику для открытия модального окна
+    });
+
+    // Функция для управления брендом
+    document.querySelectorAll('.brand-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const brandName = this.closest('.brand-card').querySelector('.brand-name').textContent;
+            alert(`Переход к управлению брендом: ${brandName}`);
+        });
+    });
+</script>
+<script src="/static/js/creator/creator_home.js"></script>
+
+{{ template "footer" . }}

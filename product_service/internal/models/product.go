@@ -29,3 +29,8 @@ type ProductUrls struct {
 func (_ *ProductUrls) TableName() string {
 	return "product_photos"
 }
+
+type BrandsProductIds struct {
+	BrandID    uint64   `json:"brand_id"`
+	ProductsId []uint64 `json:"products_id"`
+}

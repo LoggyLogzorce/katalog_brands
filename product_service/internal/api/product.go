@@ -2,10 +2,10 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"product_service/internal/models"
 	"product_service/internal/storage"
 	"strconv"
@@ -25,8 +25,8 @@ type Response struct {
 	ViewHistory   []models.Product `json:"view_history"`
 }
 
-type BrandCountRequest struct {
-	BrandIDs []uint64 `json:"brand_ids" binding:"required"`
+type BrandRequest struct {
+	BrandIDs []uint64 `json:"brand_ids"`
 }
 
 type BrandCount struct {
@@ -138,17 +138,19 @@ func GetProductInBrand(c *gin.Context) {
 }
 
 func CountProductInBrand(c *gin.Context) {
-	var req BrandCountRequest
+	var req BrandRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println("CountProductInBrand: некоректный запрос", err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "некорректный запрос"})
+		c.AbortWithStatusJSON(400, gin.H{"error": "некорректный запрос"})
 		return
 	}
 
-	counts, err := storage.GetProductCountsByBrand(req.BrandIDs)
+	role := c.Writer.Header().Get("X-Role")
+
+	counts, err := storage.GetProductCountsByBrand(req.BrandIDs, role)
 	if err != nil {
 		log.Println("CountProductInBrand: ошибка при получении данных", err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка при получении данных"})
+		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка при получении данных"})
 		return
 	}
 
@@ -160,7 +162,7 @@ func CountProductInBrand(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(200, result)
 }
 
 func GetProduct(c *gin.Context) {
@@ -171,9 +173,48 @@ func GetProduct(c *gin.Context) {
 	product, err := storage.GetProduct(productID, brandID, status)
 	if err != nil {
 		log.Println("GetProduct: ошибка при получении данных продукта", err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "ошибка при получении данных продукта"})
+		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка при получении данных продукта"})
 		return
 	}
 
 	c.JSON(200, product)
+}
+
+func GetProductInBrands(c *gin.Context) {
+	var data BrandRequest
+	if err := c.ShouldBindJSON(&data); err != nil {
+		log.Println("GetProductInBrands: некоректный запрос", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "некорректный запрос"})
+		return
+	}
+
+	products, err := storage.GetProductsInBrands(data.BrandIDs)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Println("GetProductInBrands: ошибка получения данных об товарах брендов", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об товарах брендов"})
+		return
+	}
+
+	mp := make(map[uint64][]uint64)
+
+	for _, b := range data.BrandIDs {
+		for _, p := range products {
+			if b == p.BrandID {
+				mp[b] = append(mp[b], p.ID)
+			}
+		}
+	}
+
+	fmt.Println(mp)
+
+	var resp []models.BrandsProductIds
+
+	for k, v := range mp {
+		resp = append(resp, models.BrandsProductIds{
+			BrandID:    k,
+			ProductsId: v,
+		})
+	}
+
+	c.JSON(200, resp)
 }

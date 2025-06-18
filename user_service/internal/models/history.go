@@ -11,3 +11,8 @@ type History struct {
 func (_ *History) TableName() string {
 	return "view_history"
 }
+
+type ProductViewStat struct {
+	ProductID uint64 `json:"product_id"`
+	Views     int    `json:"views"`
+}

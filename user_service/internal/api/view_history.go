@@ -8,6 +8,14 @@ import (
 	"user_service/internal/storage"
 )
 
+type ViewCountRequest struct {
+	ProductsID []uint64 `json:"products_id"`
+}
+
+type ProductStatsReq struct {
+	ProductIDs []uint64 `json:"product_ids"`
+}
+
 func GetViewHistoryHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 
@@ -90,4 +98,41 @@ func ClearViewHistoryHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{})
+}
+
+func CountViewProductHandler(c *gin.Context) {
+	var data ViewCountRequest
+	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
+		log.Println("CountViewProductHandler: ошибка разбора запроса", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка разбора запроса"})
+		return
+	}
+
+	count, err := storage.CountView(data.ProductsID)
+	if err != nil {
+		log.Println("CountViewProductHandler: ошибка получения количества просмотров", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка получения количества просмотров"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"count_view": count,
+	})
+}
+
+func GetProductViewsStatsHandler(c *gin.Context) {
+	var req ProductStatsReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "некорректный запрос"})
+		return
+	}
+
+	rows, err := storage.GetProductViewsStats(req.ProductIDs)
+	if err != nil {
+		log.Println("GetProductViewsStatsHandler: ошибка БД", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка БД"})
+		return
+	}
+
+	c.JSON(200, rows)
 }

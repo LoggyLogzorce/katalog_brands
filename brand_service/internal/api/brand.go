@@ -16,13 +16,14 @@ type BrandRequest struct {
 func GetAllBrands(c *gin.Context) {
 	status := c.Param("status")
 	count := c.Query("count")
+	creatorID := c.Query("creatorID")
 
 	limitInt, err := strconv.Atoi(count)
 	if err != nil {
 		limitInt = -1
 	}
 
-	brands, err := storage.GetAllBrands(status, limitInt)
+	brands, err := storage.GetAllBrands(status, creatorID, limitInt)
 	if err != nil {
 		log.Println("GetAllBrands: не удалось получить информацию о брендах из бд", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить информацию о брендах"})

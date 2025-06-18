@@ -1,0 +1,51 @@
+{{ template "base" . }}
+<link href="/static/css/public/brand_page.css" rel="stylesheet">
+</head>
+<body>
+<!-- Шапка -->
+{{ template "header" . }}
+
+<!-- Основной контент -->
+<div class="brand-container">
+    <div class="brand-header">
+        <img class="brand-logo" alt="" >
+        <h1 class="brand-title"></h1>
+        <p class="brand-description"></p>
+
+        <div class="brand-stats">
+            <div class="stat-card rating">
+                <div class="stat-value"></div>
+                <div class="stat-label"></div>
+            </div>
+            <div class="stat-card count">
+                <div class="stat-value"></div>
+                <div class="stat-label"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="brand-products">
+        <div class="brand-products-header">
+            <h2 class="products-title"></h2>
+            <div class="sorting">
+                <label for="sort">Сортировка:</label>
+                <select id="sort">
+                    <option value="price-asc">По возрастанию цены</option>
+                    <option value="price-desc">По убыванию цены</option>
+                    <option value="newest">По новизне</option>
+                    <option value="rating">По рейтингу</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="products-grid"></div>
+    </div>
+</div>
+
+<script src="/static/js/public/render_rating.js"></script>
+<script src="/static/js/public/brand_page.js"></script>
+<script src="/static/js/public/update_favorite.js"></script>
+<script src="/static/js/public/fav_history.js"></script>
+
+<!-- Подвал -->
+{{ template "footer" . }}

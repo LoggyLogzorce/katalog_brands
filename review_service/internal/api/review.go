@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"review_service/internal/models"
@@ -8,6 +9,10 @@ import (
 	"strconv"
 	"time"
 )
+
+type ProductStatsReq struct {
+	ProductIDs []uint64 `json:"product_ids"`
+}
 
 type ReviewRequest struct {
 	Rating  int    `json:"rating"`
@@ -76,4 +81,26 @@ func CreateReviewHandler(c *gin.Context) {
 	}
 
 	c.JSON(201, gin.H{})
+}
+
+func GetProductReviewsStatsHandler(c *gin.Context) {
+	var req ProductStatsReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Println("GetProductReviewsStatsHandler: некорректный запрос", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "некорректный запрос"})
+		return
+	}
+
+	fmt.Println(req)
+
+	rows, err := storage.GetProductReviewsStatsHandler(req.ProductIDs)
+	if err != nil {
+		log.Println("GetProductReviewsStatsHandler: ошибка БД", err)
+		c.AbortWithStatusJSON(500, gin.H{})
+		return
+	}
+
+	fmt.Println(rows)
+
+	c.JSON(200, rows)
 }

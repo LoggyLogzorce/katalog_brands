@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// Проксирование запроса к микросервису
-func proxyTo(c *gin.Context, target string, requestURI string, body io.Reader) (int, http.Header, []byte, error) {
+// ProxyTo Проксирование запроса к микросервису
+func ProxyTo(c *gin.Context, target string, requestURI string, body io.Reader) (int, http.Header, []byte, error) {
 	if body == nil {
 		body = c.Request.Body
 	}

@@ -1,0 +1,126 @@
+{{ template "base" . }}
+    <link href="/static/css/public/product_page.css" rel="stylesheet">
+    <link href="/static/css/public/index.css" rel="stylesheet">
+</head>
+<body>
+
+{{ template "header" . }}
+
+<div class="container">
+    <!-- Основная информация о товаре -->
+    <div class="product-detail">
+        <!-- Галерея изображений -->
+        <div class="product-gallery">
+            <div class="main-image">
+                <img id="mainImage">
+            </div>
+            <div class="thumbnails"></div>
+        </div>
+
+        <!-- Информация о товаре -->
+        <div class="product-info">
+            <h1 class="product-title"></h1>
+            <div class="product-brand"></div>
+            <div class="product-rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span class="review-count-1"></span>
+            </div>
+
+            <div class="product-price"></div>
+
+            <p class="product-description"></p>
+
+            <div class="product-actions">
+                <button class="add-to-favorites" id="favoriteBtn">
+                    <i class="far fa-heart"></i> Добавить в избранное
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Отзывы -->
+    <div class="reviews-section">
+        <h2 class="section-title" style="margin-bottom: 25px;">Отзывы покупателей</h2>
+
+        <div class="review-summary">
+            <div class="rating-overview">
+                <div class="overall-rating"></div>
+                <div class="stars-large">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <div class="review-count-2"></div>
+            </div>
+        </div>
+
+        <!-- Список отзывов -->
+        <div class="reviews-list"></div>
+
+        <!-- Форма для добавления отзыва -->
+        <div class="review-form">
+            <h3>Оставить отзыв</h3>
+            <form id="reviewForm">
+                <div class="form-group">
+                    <label>Ваша оценка</label>
+                    <div class="rating-input" id="userRating">
+                        <span class="star" data-value="1"><i class="far fa-star"></i></span>
+                        <span class="star" data-value="2"><i class="far fa-star"></i></span>
+                        <span class="star" data-value="3"><i class="far fa-star"></i></span>
+                        <span class="star" data-value="4"><i class="far fa-star"></i></span>
+                        <span class="star" data-value="5"><i class="far fa-star"></i></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="review-text">Ваш отзыв (не обязательно)</label>
+                    <textarea class="form-control" id="review-text" placeholder="Расскажите о вашем опыте использования товара" minlength="10"></textarea>
+                </div>
+
+                <button type="submit" class="submit-review">Отправить отзыв</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Похожие товары -->
+    <div class="section related-products">
+        <div class="section-header">
+            <h2 class="section-title">Другие товары бренда</h2>
+            <a href="#" class="view-all">Смотреть все <i class="fas fa-arrow-right"></i></a>
+        </div>
+
+        <div class="products-grid"></div>
+    </div>
+</div>
+
+<script src="/static/js/public/product_page.js"></script>
+<script src="/static/js/public/fav_history.js"></script>
+<script src="/static/js/public/render_rating.js"></script>
+
+<script>
+    // Функция для выставления рейтинга
+    document.querySelectorAll('#userRating .star').forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.getAttribute('data-value'));
+            const stars = document.querySelectorAll('#userRating .star');
+
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.innerHTML = '<i class="fas fa-star"></i>';
+                    s.classList.add('active');
+                } else {
+                    s.innerHTML = '<i class="far fa-star"></i>';
+                    s.classList.remove('active');
+                }
+            });
+        });
+    });
+</script>
+
+{{ template "footer" . }}

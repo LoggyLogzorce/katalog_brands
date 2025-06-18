@@ -28,3 +28,9 @@ type ReviewsResponse struct {
 	Comment   string    `json:"description"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type ProductReviewStat struct {
+	ProductID   uint64  `json:"product_id"`
+	AvgRating   float64 `json:"avg_rating"`
+	CountReview int     `json:"count_review"`
+}

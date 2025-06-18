@@ -7,3 +7,8 @@ type ViewHistory struct {
 	ProductID uint64    `json:"product_id"`
 	ViewedAt  time.Time `json:"viewed_at"`
 }
+
+type ProductViewStat struct {
+	ProductID uint64 `json:"product_id"`
+	Views     int    `json:"views"`
+}

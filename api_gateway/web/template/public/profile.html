@@ -1,0 +1,77 @@
+{{ template "base" . }}
+    <link href="/static/css/public/profile.css" rel="stylesheet">
+</head>
+<body>
+<!-- Шапка -->
+{{ template "header" . }}
+
+<!-- Основной контент -->
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="profile-title">Мой профиль</h1>
+    </div>
+
+    <div class="profile-content">
+        <!-- Блок с информацией о пользователе -->
+        <div class="user-card">
+            <div class="user-info-header">
+                <h2 id="user-name" class="user-name">Загрузка…</h2>
+                <p id="user-email" class="user-email">Загрузка…</p>
+            </div>
+
+            <div class="user-stats">
+                <div class="stat-item">
+                    <div id="stat-view-history" class="stat-value">0</div>
+                    <div class="stat-label">Просмотры</div>
+                </div>
+                <div class="stat-item">
+                    <div id="stat-favorites" class="stat-value">0</div>
+                    <div class="stat-label">Избранное</div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button id="change-password-btn" class="btn btn-primary">
+                    <i class="fas fa-lock"></i> Сменить пароль
+                </button>
+                {{ if eq .Role "user" }}
+                <button id="become-creator-btn" class="btn btn-outline hidden">
+                    <i class="fas fa-shopping-cart"></i> Стать creator’ом
+                </button>
+                {{ end }}
+            </div>
+        </div>
+
+        <!-- Основная колонка -->
+        <div>
+            <!-- Избранные товары -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Избранные товары</h2>
+                    <a href="/favorites" class="view-all">Показать все</a>
+                </div>
+                <div id="favorites-grid" class="products-grid">
+                    <p id="favorites-loading">Загрузка…</p>
+                </div>
+            </div>
+
+            <!-- История просмотра -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">История просмотров</h2>
+                    <a href="/view-history" class="view-all">Показать все</a>
+                </div>
+                <div id="history-grid" class="products-grid">
+                    <p id="history-loading">Загрузка…</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/public/profile.js"></script>
+<script src="/static/js/public/fav_history.js"></script>
+<script src="/static/js/public/update_favorite.js"></script>
+
+<!-- Подвал -->
+{{ template "footer" . }}

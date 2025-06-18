@@ -29,6 +29,7 @@ func SetRouters() *gin.Engine {
 			hisGroup.DELETE("/:id", api.DeleteViewProductHandler)
 			hisGroup.DELETE("/", api.ClearViewHistoryHandler)
 		}
+		apiGroup.GET("/product_views_stats", api.GetProductViewsStatsHandler)
 	}
 
 	return r
