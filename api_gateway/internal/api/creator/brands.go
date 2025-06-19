@@ -425,6 +425,7 @@ func CreateBrandHandler(c *gin.Context) {
 	brand.Description = brandDesc
 
 	brandJson, err := json.Marshal(brand)
+	url = fmt.Sprintf("/api/v1/brand/create")
 	status, _, _, err = api.ProxyTo(c, "http://localhost:8084", "POST", url, bytes.NewReader(brandJson))
 	if err != nil {
 		log.Println("CreateBrandHandler: ошибка вызова Brand Service:", err)

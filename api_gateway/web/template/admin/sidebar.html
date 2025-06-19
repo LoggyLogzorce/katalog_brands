@@ -1,0 +1,40 @@
+{{ define "sidebar" }}
+<div class="sidebar">
+    <div class="logo-container">
+        <a href="/brands" class="logo">
+            <i class="fas fa-crown"></i>
+            <span>Админ-панель</span>
+        </a>
+    </div>
+
+    <nav>
+        <a href="/admin/brands" class="nav-item">
+            <i class="fas fa-gem"></i>
+            <span>Бренды</span>
+        </a>
+        <a href="/admin/products" class="nav-item">
+            <i class="fas fa-box"></i>
+            <span>Товары</span>
+        </a>
+        <a href="/admin/categories" class="nav-item">
+            <i class="fas fa-tags"></i>
+            <span>Категории</span>
+        </a>
+        <a href="/admin/moderation" class="nav-item">
+            <i class="fas fa-clipboard-check"></i>
+            <span>Модерация</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <a href="/admin/users" class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>Пользователи</span>
+        </a>
+        <a href="/logout" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Выйти</span>
+        </a>
+    </nav>
+</div>
+{{ end }}

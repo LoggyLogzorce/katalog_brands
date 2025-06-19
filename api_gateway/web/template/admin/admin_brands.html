@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | Управление брендами</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="/static/css/admin/admin_brands.css" rel="stylesheet">
+</head>
+<body>
+<!-- Сайдбар -->
+{{ template "sidebar" . }}
+
+<!-- Основной контент -->
+<div class="main-content">
+    <!-- Шапка -->
+    <div class="header">
+        <h1 class="page-title">Управление брендами</h1>
+        <div class="header-actions">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Поиск брендов...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="filters">
+        <div class="filter-item">
+            <label>Статус:</label>
+            <select id="statusFilter">
+                <option value="">Все</option>
+                <option value="pending">На модерации</option>
+                <option value="approved">Одобрено</option>
+                <option value="rejected">Отклонено</option>
+            </select>
+        </div>
+        <div class="filter-item">
+            <label>Сортировка:</label>
+            <select id="sortFilter">
+                <option value="newest">Сначала новые</option>
+                <option value="oldest">Сначала старые</option>
+                <option value="name">По названию (А-Я)</option>
+            </select>
+        </div>
+        <div class="filter-item">
+            <button class="btn btn-outline" id="applyFilters">
+                <i class="fas fa-filter"></i> Применить
+            </button>
+        </div>
+    </div>
+
+    <!-- Управление брендами -->
+    <div class="section">
+        <div class="section-header">
+            <h3 class="section-title">Список брендов</h3>
+            <button class="btn btn-primary" id="addBrandBtn">
+                <i class="fas fa-plus"></i> Добавить бренд
+            </button>
+        </div>
+
+        <div id="brandsTableContainer">
+            <!-- Таблица будет рендериться здесь -->
+            <div class="loader">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования бренда -->
+<div id="editBrandModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Редактирование бренда</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="brandEditForm" class="form-row">
+                <input type="hidden" id="brandId">
+
+                <div class="form-group">
+                    <label for="brandName">Название бренда</label>
+                    <input type="text" id="brandName" name="name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="brandOwner">Владелец бренда</label>
+                    <input type="text" id="brandOwner" name="creator" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="brandStatus">Статус</label>
+                    <select id="brandStatus" name="status" class="form-control" required>
+                        <option value="pending">На модерации</option>
+                        <option value="approved">Одобрено</option>
+                        <option value="rejected">Отклонено</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="brandDescription">Описание</label>
+                    <textarea id="brandDescription" name="description" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Логотип бренда</label>
+                    <div class="file-input-container">
+                        <div class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt"></i> Загрузить новый логотип
+                        </div>
+                        <input type="file" name="logo" id="brandLogo" class="file-input">
+                    </div>
+                    <div class="preview-container" id="logoPreview">
+                        <!-- Превью логотипа -->
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="cancelEdit">Отменить</button>
+            <button class="btn btn-success" id="saveBrand">
+                <i class="fas fa-save"></i> Сохранить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/admin/admin_brands.js"></script>
+
+</body>
+</html>

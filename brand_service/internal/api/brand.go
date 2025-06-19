@@ -70,6 +70,23 @@ func GetBrand(c *gin.Context) {
 	c.JSON(200, brand)
 }
 
+func GetBrandByID(c *gin.Context) {
+	brandID := c.Param("id")
+
+	brand, err := storage.GetBrandById(brandID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.AbortWithStatusJSON(404, gin.H{"error": "бред с данным названием не существует"})
+			return
+		}
+		log.Println("GetBrand: не удалось получить информацию о бренде из бд", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить информацию о бренде"})
+		return
+	}
+
+	c.JSON(200, brand)
+}
+
 func UpdateBrand(c *gin.Context) {
 	var brand models.Brand
 	if err := c.ShouldBindBodyWithJSON(&brand); err != nil {
@@ -78,7 +95,11 @@ func UpdateBrand(c *gin.Context) {
 		return
 	}
 
-	brand.Status = "pending"
+	status := c.Query("status")
+
+	if status != "admin" {
+		brand.Status = "pending"
+	}
 
 	err := storage.UpdateBrandInfo(brand)
 	if err != nil {
@@ -104,6 +125,19 @@ func CreateBrand(c *gin.Context) {
 	if err != nil {
 		log.Println("CreateBrand: ошибка создания бренда", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка создания бренда"})
+		return
+	}
+
+	c.JSON(200, gin.H{})
+}
+
+func DeleteBrand(c *gin.Context) {
+	brandID := c.Param("id")
+
+	err := storage.DeleteBrand(brandID)
+	if err != nil {
+		log.Println("DeleteBrand: не удалось удалить бренд", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить бренд"})
 		return
 	}
 

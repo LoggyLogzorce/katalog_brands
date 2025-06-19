@@ -2,6 +2,7 @@ package routers
 
 import (
 	"api_gateway/internal/api"
+	"api_gateway/internal/api/admin"
 	"api_gateway/internal/api/creator"
 	"api_gateway/internal/api/public"
 	"api_gateway/internal/handlers"
@@ -17,6 +18,7 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/auth", handlers.AuthHandler)
 	r.GET("/register", handlers.RegisterHandler)
 	r.POST("/logout", handlers.LogoutHandler)
+	r.GET("/logout", handlers.LogoutHandler)
 	r.GET("/brands", middleware.OptionalAuthMiddleware(), handlers.BrandsHandler)
 	r.GET("/brand/:name", middleware.OptionalAuthMiddleware(), handlers.BrandPageHandler)
 	r.GET("/brand/:name/product/:id", middleware.OptionalAuthMiddleware(), handlers.ProductHandler)
@@ -31,6 +33,12 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	{
 		creatorGroup.GET("/brands", handlers.HomePageCreator)
 		creatorGroup.GET("/brand/:name", handlers.BrandPageCreatorHandler)
+	}
+
+	adminGroup := r.Group("/admin", middleware.AuthMiddleware([]string{"admin"}))
+	{
+		adminGroup.GET("/brands", handlers.BrandsPageAdmin)
+		adminGroup.GET("/products", handlers.ProductsPageAdmin)
 	}
 
 	r.NoRoute(middleware.OptionalAuthMiddleware(), handlers.PageNotFound)
@@ -84,6 +92,14 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 		creatorGroup.POST("/brand/create", creator.CreateBrandHandler)
 		creatorGroup.DELETE("/brand/:name/product/:id", creator.DeleteProductHandler)
 		creatorGroup.PUT("/brand/:name/product/:id", creator.UpdateProductHandler)
+	}
+
+	adminGroup := publicGroup.Group("/admin", middleware.AuthMiddleware([]string{"admin"}))
+	{
+		adminGroup.GET("/brands", admin.BrandsAdminHandler)
+		adminGroup.DELETE("/brand/:id", admin.DeleteBrandHandler)
+		adminGroup.POST("/brand/create", admin.CreateBrandAdminHandler)
+		adminGroup.PUT("/brand/:id", admin.UpdateBrandAdminHandler)
 	}
 
 	return r

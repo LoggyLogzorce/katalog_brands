@@ -62,6 +62,17 @@ func GetBrandByName(name, creatorID string) (models.Brand, error) {
 	return brand, nil
 }
 
+func GetBrandById(id string) (models.Brand, error) {
+	var brand models.Brand
+
+	err := db.DB().Where("id=?", id).First(&brand).Error
+	if err != nil {
+		return models.Brand{}, err
+	}
+
+	return brand, nil
+}
+
 func UpdateBrandInfo(brand models.Brand) error {
 	err := db.DB().Save(&brand).Error
 	return err
@@ -69,5 +80,10 @@ func UpdateBrandInfo(brand models.Brand) error {
 
 func CreateBrand(brand models.Brand) error {
 	err := db.DB().Create(&brand).Error
+	return err
+}
+
+func DeleteBrand(brandId string) error {
+	err := db.DB().Model(models.Brand{}).Where("id=?", brandId).Delete(nil).Error
 	return err
 }

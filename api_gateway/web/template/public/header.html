@@ -16,6 +16,9 @@
         {{ else if eq .Role "creator" }}
         <a href="/creator/brands" class="icon">✏️ Редакция</a>
         <a href="/profile" class="profile-icon">{{ .Name }}</a>
+        {{ else if eq .Role "admin" }}
+        <a href="/admin/brands" class="icon">✏️ Admin Panel</a>
+        <a href="/profile" class="profile-icon">{{ .Name }}</a>
         {{ else }}
         <a href="/auth" class="icon">👤 Войти</a>
         {{ end }}

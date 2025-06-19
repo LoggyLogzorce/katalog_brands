@@ -13,8 +13,10 @@ func SetRouters() *gin.Engine {
 		apiGroup.GET("/brands/:status", api.GetAllBrands)
 		apiGroup.GET("/brand", api.GetBrandInfo)
 		apiGroup.GET("/brand/:name", api.GetBrand)
+		apiGroup.GET("/brand/get/:id", api.GetBrandByID)
 		apiGroup.PUT("/brand/:name", api.UpdateBrand)
-		apiGroup.POST("/brand/:name", api.CreateBrand)
+		apiGroup.POST("/brand/create", api.CreateBrand)
+		apiGroup.DELETE("/brand/:id", api.DeleteBrand)
 	}
 
 	return r
