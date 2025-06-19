@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | Управление пользователями</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="/static/css/admin/admin_products.css" rel="stylesheet">
+</head>
+<body>
+<!-- Сайдбар -->
+<div class="sidebar">
+    <div class="logo-container">
+        <a href="/admin/brands" class="logo">
+            <i class="fas fa-crown"></i>
+            <span>Админ-панель</span>
+        </a>
+    </div>
+
+    <nav>
+        <a href="/admin/brands" class="nav-item">
+            <i class="fas fa-gem"></i>
+            <span>Бренды</span>
+        </a>
+        <a href="/admin/products" class="nav-item">
+            <i class="fas fa-box"></i>
+            <span>Товары</span>
+        </a>
+        <a href="/admin/categories" class="nav-item">
+            <i class="fas fa-tags"></i>
+            <span>Категории</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <a href="/admin/users" class="nav-item active">
+            <i class="fas fa-users"></i>
+            <span>Пользователи</span>
+        </a>
+        <a href="/logout" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Выйти</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Основной контент -->
+<div class="main-content">
+    <!-- Шапка -->
+    <div class="header">
+        <h1 class="page-title">Управление пользователями</h1>
+        <div class="header-actions">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Поиск пользователей...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="filters">
+        <div class="filter-item">
+            <label>Роль:</label>
+            <select id="roleFilter">
+                <option value="">Все роли</option>
+                <option value="admin">Администратор</option>
+                <option value="creator">Продавец</option>
+                <option value="user">Пользователь</option>
+            </select>
+        </div>
+        <div class="filter-item">
+            <button class="btn btn-outline" id="applyFilters">
+                <i class="fas fa-filter"></i> Применить
+            </button>
+        </div>
+    </div>
+
+    <!-- Таблица пользователей -->
+    <div class="section">
+        <div class="section-header">
+            <h3 class="section-title">Список пользователей</h3>
+            <button class="btn btn-primary" id="addUserBtn">
+                <i class="fas fa-plus"></i> Добавить пользователя
+            </button>
+        </div>
+
+        <div id="usersTableContainer">
+            <div class="loader">
+                <div class="spinner"></div>
+                <span>Загрузка пользователей...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования пользователя -->
+<div id="editUserModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Редактирование пользователя</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="editUserForm" class="form-row">
+                <input type="hidden" id="userId">
+
+                <div class="form-group">
+                    <label for="userName">Имя пользователя</label>
+                    <input type="text" id="userName" class="form-control" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" class="form-control" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="userRole">Роль</label>
+                    <select id="userRole" class="form-control" required>
+                        <option value="user">Пользователь</option>
+                        <option value="creator">Продавец</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="cancelEdit">Отменить</button>
+            <button class="btn btn-success" id="saveUser">
+                <i class="fas fa-save"></i> Сохранить изменения
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно добавления пользователя -->
+<div id="addUserModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Добавление нового пользователя</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="addUserForm" class="form-row">
+                <div class="form-group">
+                    <label for="newUserName">Имя пользователя</label>
+                    <input type="text" id="newUserName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newUserEmail">Email</label>
+                    <input type="email" id="newUserEmail" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newUserRole">Роль</label>
+                    <select id="newUserRole" class="form-control" required>
+                        <option value="user">Пользователь</option>
+                        <option value="creator">Продавец</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newUserPassword">Пароль</label>
+                    <input type="password" id="newUserPassword" class="form-control" required>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="cancelAdd">Отменить</button>
+            <button class="btn btn-success" id="createUser">
+                <i class="fas fa-plus-circle"></i> Создать пользователя
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/admin/admin_users.js"></script>
+</body>
+</html>

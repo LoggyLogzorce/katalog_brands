@@ -121,6 +121,11 @@ closeModalBtn.onclick = cancelBtn.onclick = closeModal;
 window.onclick = e => {
     if (e.target === editModal) closeModal();
 };
+window.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && editModal.style.display === 'flex') {
+        closeModal();
+    }
+});
 
 applyFiltersBtn.onclick = filterAndSort;
 searchInput.oninput = filterAndSort;

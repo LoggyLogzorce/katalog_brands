@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление категориями | CosmoBrands</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="/static/css/admin/admin_categories.css" rel="stylesheet">
+</head>
+<body>
+<!-- Сайдбар -->
+<div class="sidebar">
+    <div class="logo-container">
+        <a href="/brands" class="logo">
+            <i class="fas fa-crown"></i>
+            <span>Админ-панель</span>
+        </a>
+    </div>
+
+    <nav>
+        <a href="/admin/brands" class="nav-item">
+            <i class="fas fa-gem"></i>
+            <span>Бренды</span>
+        </a>
+        <a href="/admin/products" class="nav-item">
+            <i class="fas fa-box"></i>
+            <span>Товары</span>
+        </a>
+        <a href="/admin/categories" class="nav-item active">
+            <i class="fas fa-tags"></i>
+            <span>Категории</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <a href="/admin/users" class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>Пользователи</span>
+        </a>
+        <a href="/logout" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Выйти</span>
+        </a>
+    </nav>
+</div>
+
+<!-- Основной контент -->
+<div class="main-content">
+    <!-- Шапка -->
+    <div class="header">
+        <h1 class="page-title">Управление категориями</h1>
+        <div class="header-actions">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Поиск категорий...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок добавления категории -->
+    <div class="section">
+        <div class="section-header">
+            <h3 class="section-title">Добавить новую категорию</h3>
+        </div>
+
+        <form id="addCategoryForm" class="form-row">
+            <div class="form-group">
+                <label for="categoryName">Название категории</label>
+                <input type="text" id="categoryName" name="category_name" class="form-control" placeholder="Введите название" required>
+            </div>
+
+            <div class="form-group">
+                <label>Изображение категории</label>
+                <div class="file-input-container">
+                    <div class="file-input-label">
+                        <i class="fas fa-cloud-upload-alt"></i> Загрузить изображение
+                    </div>
+                    <input type="file" id="categoryImage" name="logoImage" class="file-input" accept="image/*">
+                </div>
+                <div class="preview-container" id="imagePreview">
+                    <!-- Превью изображения появится здесь -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <br><button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Добавить категорию
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Таблица категорий -->
+    <div class="section">
+        <div class="section-header">
+            <h3 class="section-title">Список категорий</h3>
+        </div>
+
+        <div id="categoriesTableContainer">
+            <div class="loader">
+                <div class="spinner"></div>
+                <span>Загрузка категорий...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования -->
+<div id="editCategoryModal" class="modal" style="display: none">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Редактирование категории</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+
+        <div class="modal-body">
+            <form id="editCategoryForm" class="form-row">
+                <input type="hidden" id="editCategoryId">
+
+                <div class="form-group">
+                    <label for="editCategoryName">Название категории</label>
+                    <input type="text" name="category_name" id="editCategoryName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Изображение категории</label>
+                    <div class="file-input-container">
+                        <div class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt"></i> Заменить изображение
+                        </div>
+                        <input type="file" id="editCategoryImage" name="logoImage" class="file-input" accept="image/*">
+                    </div>
+                    <div class="preview-container" id="editImagePreview">
+                        <!-- Превью изображения появится здесь -->
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-outline" id="cancelEdit">Отменить</button>
+            <button class="btn btn-success" id="saveCategory">
+                <i class="fas fa-save"></i> Сохранить изменения
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/admin/admin_categories.js"></script>
+</body>
+</html>

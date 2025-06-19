@@ -243,7 +243,7 @@ func UpdateProductHandler(c *gin.Context) {
 	}
 
 	url = fmt.Sprintf("/api/v1/product/%s", productID)
-	status, _, body, err = api.ProxyTo(c, "http://localhost:8083", "PUT", url, bytes.NewReader(productJson))
+	status, _, _, err = api.ProxyTo(c, "http://localhost:8083", "PUT", url, bytes.NewReader(productJson))
 	if err != nil {
 		log.Println("UpdateProductHandler: ошибка вызова Product Service:", err)
 		c.AbortWithStatusJSON(http.StatusBadGateway, gin.H{"error": "Product Service недоступен"})

@@ -11,7 +11,8 @@ func SetRouters() *gin.Engine {
 	apiGroup := r.Group("/api/v1")
 	{
 		apiGroup.GET("/profile", api.GetProfileInfoHandler)
-		apiGroup.GET("/user-data", api.GetUserData)
+		apiGroup.GET("/user-data", api.GetUserDataHandler)
+		apiGroup.GET("/get/users", api.GetUsersHandler)
 		apiGroup.PUT("/update_role", api.UpdateRoleHandler)
 
 		favGroup := apiGroup.Group("/favorites")

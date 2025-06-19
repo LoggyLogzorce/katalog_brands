@@ -39,6 +39,8 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	{
 		adminGroup.GET("/brands", handlers.BrandsPageAdmin)
 		adminGroup.GET("/products", handlers.ProductsPageAdmin)
+		adminGroup.GET("/categories", handlers.CategoriesPageAdmin)
+		adminGroup.GET("/users", handlers.UsersPageAdmin)
 	}
 
 	r.NoRoute(middleware.OptionalAuthMiddleware(), handlers.PageNotFound)
@@ -100,6 +102,19 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 		adminGroup.DELETE("/brand/:id", admin.DeleteBrandHandler)
 		adminGroup.POST("/brand/create", admin.CreateBrandAdminHandler)
 		adminGroup.PUT("/brand/:id", admin.UpdateBrandAdminHandler)
+
+		adminGroup.GET("/products", admin.GetProductsAdminHandler)
+		adminGroup.POST("/product/create", admin.CreateProductAdminHandler)
+		adminGroup.DELETE("/product/delete/:id", admin.DeleteProductAdminHandler)
+		adminGroup.PUT("/product/update/:id", admin.UpdateProductAdminHandler)
+
+		adminGroup.POST("/category/create", admin.CreateCategoryAdminHandler)
+		adminGroup.PUT("/category/update/:id", admin.UpdateCategoryAdminHandler)
+		adminGroup.DELETE("/category/delete/:id", admin.DeleteCategoryAdminHandler)
+
+		adminGroup.GET("/users", admin.GetUsersAdminHandler)
+		adminGroup.POST("/user/create", admin.CreateUserAdminHandler)
+		adminGroup.PUT("/user/update/:id", admin.UpdateRoleAdminHandler)
 	}
 
 	return r

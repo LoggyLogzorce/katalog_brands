@@ -17,7 +17,7 @@ func GenerateJWT(user *models.User) (string, error) {
 		"role":   user.Role,
 		"name":   user.Name,
 		"iat":    time.Now().Unix(),
-		"exp":    time.Now().Add(15 * time.Minute).Unix(), // срок действия 24 часа
+		"exp":    time.Now().Add(60 * time.Minute).Unix(), // срок действия 24 часа
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

@@ -11,7 +11,7 @@ type UserDataRequest struct {
 	UsersID []uint64 `json:"users_id"`
 }
 
-func GetUserData(c *gin.Context) {
+func GetUserDataHandler(c *gin.Context) {
 	var data UserDataRequest
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
 		log.Println("GetUserData: ошибка разбора данных из запроса", err)
@@ -33,4 +33,15 @@ func GetUserData(c *gin.Context) {
 	}
 
 	c.JSON(200, usersData)
+}
+
+func GetUsersHandler(c *gin.Context) {
+	users, err := storage.GetUsers()
+	if err != nil {
+		log.Println("GetUsers: ошибка получения данных о пользователях", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка получения данных о пользователях"})
+		return
+	}
+
+	c.JSON(200, users)
 }

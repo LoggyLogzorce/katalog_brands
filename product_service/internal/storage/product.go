@@ -122,6 +122,20 @@ func GetProductCountsByBrand(brandIDs []uint64, role string) (map[uint64]int, er
 func GetProducts(status string, limit int) ([]models.Product, error) {
 	var products []models.Product
 
+	if status == "admin" {
+		err := db.DB().
+			Preload("ProductUrls").
+			Preload("Category").
+			Limit(limit).
+			Find(&products).
+			Error
+		if err != nil {
+			return nil, err
+		}
+
+		return products, nil
+	}
+
 	err := db.DB().
 		Preload("ProductUrls").
 		Preload("Category").
@@ -210,7 +224,7 @@ func CreateProduct(data models.Product, urls []models.ProductUrls) error {
 	return err
 }
 
-func DeleteProduct(brandID, productID string) error {
+func DeleteProduct(brandID, productID, status string) error {
 	err := db.DB().Transaction(func(tx *gorm.DB) error {
 		if err := tx.
 			Model(&models.ProductUrls{}).
@@ -220,12 +234,22 @@ func DeleteProduct(brandID, productID string) error {
 			return err
 		}
 
-		if err := tx.
-			Model(&models.Product{}).
-			Where("id = ? AND brand_id = ?", productID, brandID).
-			Delete(nil).
-			Error; err != nil {
-			return err
+		if status == "admin" {
+			if err := tx.
+				Model(&models.Product{}).
+				Where("id = ?", productID).
+				Delete(nil).
+				Error; err != nil {
+				return err
+			}
+		} else {
+			if err := tx.
+				Model(&models.Product{}).
+				Where("id = ? AND brand_id = ?", productID, brandID).
+				Delete(nil).
+				Error; err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -245,7 +269,7 @@ func UpdateProduct(data models.Product) error {
 		CreatedAt:   data.CreatedAt,
 	}
 	err := db.DB().Transaction(func(tx *gorm.DB) error {
-		if err := tx.Save(&product).Error; err != nil {
+		if err := tx.Omit("created_at").Save(&product).Error; err != nil {
 			return err
 		}
 

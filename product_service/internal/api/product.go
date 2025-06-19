@@ -225,8 +225,11 @@ func CreateProductHandler(c *gin.Context) {
 		return
 	}
 
+	if product.Status == "" {
+		product.Status = "pending"
+	}
+
 	product.CreatedAt = time.Now()
-	product.Status = "pending"
 
 	urls := product.ProductUrls
 
@@ -243,8 +246,9 @@ func CreateProductHandler(c *gin.Context) {
 func DeleteProductHandler(c *gin.Context) {
 	brandID := c.Param("id")
 	productID := c.Param("pId")
+	status := c.Query("status")
 
-	err := storage.DeleteProduct(brandID, productID)
+	err := storage.DeleteProduct(brandID, productID, status)
 	if err != nil {
 		log.Println("DeleteProductHandler: не удалось удалить товар", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить товар"})
@@ -270,8 +274,11 @@ func UpdateProductHandler(c *gin.Context) {
 		return
 	}
 
+	if data.Status == "" {
+		data.Status = "pending"
+	}
+
 	data.ID = productIdUint
-	data.Status = "pending"
 
 	for i := range data.ProductUrls {
 		data.ProductUrls[i].ProductID = data.ID

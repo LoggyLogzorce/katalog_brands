@@ -45,7 +45,7 @@ func Login(c *gin.Context) {
 	c.SetCookie(
 		"access_token",
 		prefixToken,
-		900,
+		3600,
 		"/",
 		"localhost",
 		true,

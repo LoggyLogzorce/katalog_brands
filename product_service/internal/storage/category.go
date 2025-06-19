@@ -21,3 +21,18 @@ func SelectCategories(limit int) ([]models.Category, error) {
 
 	return categories, nil
 }
+
+func CreateCategory(category models.Category) error {
+	err := db.DB().Omit("product_count").Create(&category).Error
+	return err
+}
+
+func UpdateCategory(category models.Category) error {
+	err := db.DB().Omit("product_count").Save(&category).Error
+	return err
+}
+
+func DeleteCategory(cId string) error {
+	err := db.DB().Model(models.Category{}).Where("id=?", cId).Delete(nil).Error
+	return err
+}

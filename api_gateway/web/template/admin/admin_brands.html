@@ -3,14 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ-панель | Управление брендами</title>
+    <title>Управление брендами | CosmoBrands</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="/static/css/admin/admin_brands.css" rel="stylesheet">
 </head>
 <body>
 <!-- Сайдбар -->
-{{ template "sidebar" . }}
+<div class="sidebar">
+    <div class="logo-container">
+        <a href="/admin/brands" class="logo">
+            <i class="fas fa-crown"></i>
+            <span>Админ-панель</span>
+        </a>
+    </div>
+
+    <nav>
+        <a href="/admin/brands" class="nav-item active">
+            <i class="fas fa-gem"></i>
+            <span>Бренды</span>
+        </a>
+        <a href="/admin/products" class="nav-item">
+            <i class="fas fa-box"></i>
+            <span>Товары</span>
+        </a>
+        <a href="/admin/categories" class="nav-item">
+            <i class="fas fa-tags"></i>
+            <span>Категории</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <a href="/admin/users" class="nav-item">
+            <i class="fas fa-users"></i>
+            <span>Пользователи</span>
+        </a>
+        <a href="/logout" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Выйти</span>
+        </a>
+    </nav>
+</div>
 
 <!-- Основной контент -->
 <div class="main-content">

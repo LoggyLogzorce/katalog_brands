@@ -44,10 +44,12 @@ func UpdateRoleHandler(c *gin.Context) {
 		return
 	}
 
-	userID := c.GetHeader("X-User-ID")
-	role := c.GetHeader("X-Role")
+	userID := c.Query("id")
+	if userID == "" {
+		userID = c.GetHeader("X-User-ID")
+	}
 
-	if err := storage.UpdateRoleUser(userID, role, user.Role); err != nil {
+	if err := storage.UpdateRoleUser(userID, user.Role); err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "Ошибка обновления роли", "error_sys": err})
 		return
 	}

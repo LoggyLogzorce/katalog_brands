@@ -7,7 +7,9 @@ import (
 )
 
 func InsertUser(data models.User) error {
-	data.Role = "user"
+	if data.Role == "" {
+		data.Role = "user"
+	}
 	err := db.DB().Save(&data).Error
 	fmt.Println(err)
 	return err
