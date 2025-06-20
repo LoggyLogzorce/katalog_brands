@@ -28,6 +28,7 @@ func SetStaticRouters(r *gin.Engine) *gin.Engine {
 	r.GET("/profile", middleware.OptionalAuthMiddleware(), handlers.ProfileHandler)
 	r.GET("/favorites", middleware.OptionalAuthMiddleware(), handlers.FavoriteHandler)
 	r.GET("/view-history", middleware.OptionalAuthMiddleware(), handlers.ViewHistoryHandler)
+	r.GET("/search", middleware.OptionalAuthMiddleware(), handlers.SearchHandler)
 
 	creatorGroup := r.Group("/creator", middleware.AuthMiddleware([]string{"creator"}))
 	{
@@ -83,6 +84,7 @@ func SetApiRouters(r *gin.Engine) *gin.Engine {
 		}
 
 		publicGroup.PUT("/update_role", middleware.OptionalAuthMiddleware(), public.UpdateRoleHandler)
+		publicGroup.GET("/search", middleware.OptionalAuthMiddleware(), public.SearchAllHandler)
 	}
 
 	creatorGroup := publicGroup.Group("/creator", middleware.AuthMiddleware([]string{"creator"}))

@@ -2,12 +2,14 @@ package models
 
 import "time"
 
-type ProfileProductRequest struct {
+type ProductRequest struct {
+	AllProducts []uint64 `json:"all_products"`
 	Favorite    []uint64 `json:"favorite"`
 	ViewHistory []uint64 `json:"view_history"`
 }
 
 type ProfileProductResponse struct {
+	AllProducts []Product `json:"all_products"`
 	Favorite    []Product `json:"favorites"`
 	ViewHistory []Product `json:"view_history"`
 }

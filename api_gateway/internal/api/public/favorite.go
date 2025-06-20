@@ -40,7 +40,7 @@ func FavoriteHandler(c *gin.Context) {
 		favoritesID = append(favoritesID, v.ProductID)
 	}
 
-	productsID := models.ProfileProductRequest{
+	productsID := models.ProductRequest{
 		Favorite: favoritesID,
 	}
 

@@ -48,7 +48,7 @@ func ProfileHandler(c *gin.Context) {
 		viewsHistoryID = append(viewsHistoryID, v.ProductID)
 	}
 
-	productsID := models.ProfileProductRequest{
+	productsID := models.ProductRequest{
 		Favorite:    favoritesID,
 		ViewHistory: viewsHistoryID,
 	}

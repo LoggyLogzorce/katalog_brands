@@ -22,12 +22,22 @@ func SelectCategories(limit int) ([]models.Category, error) {
 	return categories, nil
 }
 
-func CreateCategory(category models.Category) error {
+func GetCategory(id uint64) (models.Category, error) {
+	var category models.Category
+	err := db.DB().Where("id=?", id).First(&category).Error
+	return category, err
+}
+
+func CreateCategory(category models.Category) (models.Category, error) {
 	err := db.DB().Omit("product_count").Create(&category).Error
-	return err
+	return category, err
 }
 
 func UpdateCategory(category models.Category) error {
+	if category.Photo == "" {
+		err := db.DB().Omit("product_count", "photo").Save(&category).Error
+		return err
+	}
 	err := db.DB().Omit("product_count").Save(&category).Error
 	return err
 }
