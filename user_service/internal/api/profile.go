@@ -4,26 +4,25 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"user_service/internal/models"
-	"user_service/internal/storage"
 )
 
-func GetProfileInfoHandler(c *gin.Context) {
+func (h *ReviewHandler) GetProfileInfoHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 	role := c.GetHeader("X-Role")
 
-	user, err := storage.SelectUser(userID, role)
+	user, err := h.Repo.SelectUser(c.Request.Context(), userID, role)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных пользователя"})
 		return
 	}
 
-	favorites, err := storage.SelectFavorite(userID, 6)
+	favorites, err := h.Repo.SelectFavorite(c.Request.Context(), userID, 6)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения избранного", "error_sys": err})
 		return
 	}
 
-	history, err := storage.SelectHistory(userID, 6)
+	history, err := h.Repo.SelectHistory(c.Request.Context(), userID, 6)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения истории просмотра", "error_sys": err})
 		return
@@ -36,7 +35,7 @@ func GetProfileInfoHandler(c *gin.Context) {
 	})
 }
 
-func UpdateRoleHandler(c *gin.Context) {
+func (h *ReviewHandler) UpdateRoleHandler(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindBodyWithJSON(&user); err != nil {
 		log.Println("UpdateRoleHandler: не удалось получить роль из тела запроса", err)
@@ -49,7 +48,7 @@ func UpdateRoleHandler(c *gin.Context) {
 		userID = c.GetHeader("X-User-ID")
 	}
 
-	if err := storage.UpdateRoleUser(userID, user.Role); err != nil {
+	if err := h.Repo.UpdateRoleUser(c.Request.Context(), userID, user.Role); err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "Ошибка обновления роли", "error_sys": err})
 		return
 	}

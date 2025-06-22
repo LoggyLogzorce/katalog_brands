@@ -1,16 +1,28 @@
 package api
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
+	"product_service/internal/es"
 	"product_service/internal/models"
 	"product_service/internal/storage"
 	"strconv"
 	"time"
 )
+
+type ProductHandler struct {
+	PrRepo storage.ProductRepository
+	EsRepo es.IndexerRepository
+}
+
+func NewProductHandler(pr storage.ProductRepository, es es.IndexerRepository) *ProductHandler {
+	return &ProductHandler{PrRepo: pr, EsRepo: es}
+}
 
 type Request struct {
 	AllProducts   []uint64 `json:"all_products"`
@@ -35,7 +47,7 @@ type BrandCount struct {
 	Count   int    `json:"count"`
 }
 
-func GetProductsHandler(c *gin.Context) {
+func (h *ProductHandler) GetProductsHandler(c *gin.Context) {
 	status := c.Param("status")
 	count := c.Query("count")
 	if count != "" {
@@ -43,7 +55,7 @@ func GetProductsHandler(c *gin.Context) {
 		if err != nil {
 			limitInt = -1
 		}
-		products, err := storage.GetProducts(status, limitInt)
+		products, err := h.PrRepo.GetProducts(c.Request.Context(), status, limitInt)
 		if err != nil {
 			log.Println("GetProductHandler: ошибка получения списка товаров", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения списка товаров"})
@@ -63,7 +75,7 @@ func GetProductsHandler(c *gin.Context) {
 	}
 
 	if len(data.AllProducts) != 0 {
-		products, err := storage.SelectProduct(data.AllProducts, status)
+		products, err := h.PrRepo.SelectProduct(c.Request.Context(), data.AllProducts, status)
 		if err != nil {
 			log.Println("GetProductHandler: ошибка получения данных о продуктах", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных о продуктах"})
@@ -73,7 +85,7 @@ func GetProductsHandler(c *gin.Context) {
 	}
 
 	if len(data.BrandProducts) != 0 {
-		brandProducts, err := storage.SelectProduct(data.BrandProducts, status)
+		brandProducts, err := h.PrRepo.SelectProduct(c.Request.Context(), data.BrandProducts, status)
 		if err != nil {
 			log.Println("GetProductHandler: ошибка получения данных о продуктах бренда", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных о продуктах"})
@@ -83,7 +95,7 @@ func GetProductsHandler(c *gin.Context) {
 	}
 
 	if len(data.Favorite) != 0 {
-		productsFavorite, err := storage.SelectProduct(data.Favorite, status)
+		productsFavorite, err := h.PrRepo.SelectProduct(c.Request.Context(), data.Favorite, status)
 		if err != nil {
 			log.Println("GetProductHandler: ошибка получения данных об избранных", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об избранных"})
@@ -97,7 +109,7 @@ func GetProductsHandler(c *gin.Context) {
 	}
 
 	if len(data.ViewHistory) != 0 {
-		productsViewHistory, err := storage.SelectProduct(data.ViewHistory, status)
+		productsViewHistory, err := h.PrRepo.SelectProduct(c.Request.Context(), data.ViewHistory, status)
 		if err != nil {
 			log.Println("GetProductHandler: ошибка получения данных об истории просмотра", err)
 			c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об истории просмотра"})
@@ -110,11 +122,11 @@ func GetProductsHandler(c *gin.Context) {
 
 }
 
-func GetProductInCategoryHandler(c *gin.Context) {
+func (h *ProductHandler) GetProductInCategoryHandler(c *gin.Context) {
 	categoryID := c.Param("id")
 	productStatus := c.Param("status")
 
-	products, err := storage.SelectProductsInCategory(categoryID, productStatus)
+	products, err := h.PrRepo.SelectProductsInCategory(c.Request.Context(), categoryID, productStatus)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Println("GetProductInCategoryHandler: ошибка получения данных об товаров из категории", categoryID, err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об истории просмотра"})
@@ -124,11 +136,11 @@ func GetProductInCategoryHandler(c *gin.Context) {
 	c.JSON(200, products)
 }
 
-func GetProductInBrandHandler(c *gin.Context) {
+func (h *ProductHandler) GetProductInBrandHandler(c *gin.Context) {
 	brandID := c.Param("id")
 	productStatus := c.Param("status")
 
-	products, err := storage.SelectProductsInBrand(brandID, productStatus)
+	products, err := h.PrRepo.SelectProductsInBrand(c.Request.Context(), brandID, productStatus)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Println("GetProductInBrandHandler: ошибка получения данных об товарах бренда", brandID, err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об истории просмотра"})
@@ -138,7 +150,7 @@ func GetProductInBrandHandler(c *gin.Context) {
 	c.JSON(200, products)
 }
 
-func CountProductInBrandHandler(c *gin.Context) {
+func (h *ProductHandler) CountProductInBrandHandler(c *gin.Context) {
 	var req BrandRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println("CountProductInBrandHandler: некоректный запрос", err)
@@ -148,7 +160,7 @@ func CountProductInBrandHandler(c *gin.Context) {
 
 	role := c.Writer.Header().Get("X-Role")
 
-	counts, err := storage.GetProductCountsByBrand(req.BrandIDs, role)
+	counts, err := h.PrRepo.GetProductCountsByBrand(c.Request.Context(), req.BrandIDs, role)
 	if err != nil {
 		log.Println("CountProductInBrandHandler: ошибка при получении данных", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка при получении данных"})
@@ -166,12 +178,12 @@ func CountProductInBrandHandler(c *gin.Context) {
 	c.JSON(200, result)
 }
 
-func GetProductHandler(c *gin.Context) {
+func (h *ProductHandler) GetProductHandler(c *gin.Context) {
 	productID := c.Param("pId")
 	brandID := c.Param("id")
 	status := c.Query("status")
 
-	product, err := storage.GetProduct(productID, brandID, status)
+	product, err := h.PrRepo.GetProduct(c.Request.Context(), productID, brandID, status)
 	if err != nil {
 		log.Println("GetProductHandler: ошибка при получении данных продукта", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка при получении данных продукта"})
@@ -181,7 +193,7 @@ func GetProductHandler(c *gin.Context) {
 	c.JSON(200, product)
 }
 
-func GetProductInBrandsHandler(c *gin.Context) {
+func (h *ProductHandler) GetProductInBrandsHandler(c *gin.Context) {
 	var data BrandRequest
 	if err := c.ShouldBindJSON(&data); err != nil {
 		log.Println("GetProductInBrandsHandler: некоректный запрос", err)
@@ -189,7 +201,7 @@ func GetProductInBrandsHandler(c *gin.Context) {
 		return
 	}
 
-	products, err := storage.GetProductsInBrands(data.BrandIDs)
+	products, err := h.PrRepo.GetProductsInBrands(c.Request.Context(), data.BrandIDs)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Println("GetProductInBrandsHandler: ошибка получения данных об товарах брендов", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения данных об товарах брендов"})
@@ -218,7 +230,7 @@ func GetProductInBrandsHandler(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
-func CreateProductHandler(c *gin.Context) {
+func (h *ProductHandler) CreateProductHandler(c *gin.Context) {
 	var product models.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		log.Println("CreateProductHandler:", err)
@@ -232,27 +244,44 @@ func CreateProductHandler(c *gin.Context) {
 	product.CreatedAt = time.Now()
 
 	// сохраняем в БД
-	product, err := storage.CreateProduct(product, product.ProductUrls)
+	product, err := h.PrRepo.CreateProduct(c.Request.Context(), product, product.ProductUrls)
 	if err != nil {
 		log.Println("CreateProductHandler:", err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "не удалось сохранить товар"})
 		return
 	}
 
-	go func() {
-		product, err = storage.GetProduct(strconv.FormatUint(product.ID, 10), strconv.FormatUint(product.BrandID, 10), product.Status)
+	go func(data models.Product) {
+		p, err := h.PrRepo.GetProduct(c.Request.Context(), strconv.FormatUint(data.ID, 10), strconv.FormatUint(data.BrandID, 10), data.Status)
 		if err != nil {
-			log.Println("CreateProductHandler: не удалось получить товар для индексации", err)
+			log.Println("UpdateProductHandler: не удалось получить товар для индексации", err)
 			return
 		}
 
-		CreateUpdateIndexProduct(product)
-	}()
+		doc := es.ProductDoc{
+			ID:          fmt.Sprint(p.ID),
+			Name:        p.Name,
+			Description: p.Description,
+			Category:    p.Category.Name,
+			Price:       p.Price,
+			Photo:       p.ProductUrls[0].Url,
+			Status:      p.Status,
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := h.EsRepo.IndexProduct(ctx, doc); err != nil {
+			log.Println("CreateProductHandler: ES indexing failed:", err)
+			return
+		}
+		log.Println("CreateProductHandler: ES indexing successfully")
+	}(product)
 
 	c.JSON(http.StatusCreated, gin.H{})
 }
 
-func UpdateProductHandler(c *gin.Context) {
+func (h *ProductHandler) UpdateProductHandler(c *gin.Context) {
 	var data models.Product
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
 		log.Println("UpdateProductHandler: не удалось получить данные из запроса", err)
@@ -278,7 +307,7 @@ func UpdateProductHandler(c *gin.Context) {
 		data.ProductUrls[i].ProductID = data.ID
 	}
 
-	err = storage.UpdateProduct(data)
+	err = h.PrRepo.UpdateProduct(c.Request.Context(), data)
 	if err != nil {
 		log.Println("UpdateProductHandler: не удалось обновить данные товара", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось обновить данные товара"})
@@ -286,31 +315,57 @@ func UpdateProductHandler(c *gin.Context) {
 	}
 
 	go func() {
-		product, err := storage.GetProduct(strconv.FormatUint(data.ID, 10), strconv.FormatUint(data.BrandID, 10), data.Status)
+		p, err := h.PrRepo.GetProduct(c.Request.Context(), strconv.FormatUint(data.ID, 10), strconv.FormatUint(data.BrandID, 10), data.Status)
 		if err != nil {
 			log.Println("UpdateProductHandler: не удалось получить товар для индексации", err)
 			return
 		}
 
-		CreateUpdateIndexProduct(product)
+		doc := es.ProductDoc{
+			ID:          fmt.Sprint(p.ID),
+			Name:        p.Name,
+			Description: p.Description,
+			Category:    p.Category.Name,
+			Price:       p.Price,
+			Photo:       p.ProductUrls[0].Url,
+			Status:      p.Status,
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := h.EsRepo.IndexProduct(ctx, doc); err != nil {
+			log.Println("CreateProductHandler: ES indexing failed:", err)
+			return
+		}
+		log.Println("CreateProductHandler: ES indexing successfully")
 	}()
 
 	c.JSON(200, gin.H{})
 }
 
-func DeleteProductHandler(c *gin.Context) {
+func (h *ProductHandler) DeleteProductHandler(c *gin.Context) {
 	brandID := c.Param("id")
 	productID := c.Param("pId")
 	status := c.Query("status")
 
-	err := storage.DeleteProduct(brandID, productID, status)
+	err := h.PrRepo.Delete(c.Request.Context(), brandID, productID, status)
 	if err != nil {
 		log.Println("DeleteProductHandler: не удалось удалить товар", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить товар"})
 		return
 	}
 
-	go DeleteIndexProduct(productID)
+	go func(id string) {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := h.EsRepo.DeleteProduct(ctx, id); err != nil {
+			log.Println("DeleteProductHandler: ошибка удаления из ES: doc", err)
+			return
+		}
+		log.Println("DeleteProductHandler: успешное удаление из ES:", id)
+	}(productID)
 
 	c.JSON(200, gin.H{})
 }

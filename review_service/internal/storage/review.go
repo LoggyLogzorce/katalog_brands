@@ -1,16 +1,30 @@
 package storage
 
 import (
+	"context"
 	"errors"
 	"gorm.io/gorm"
-	"review_service/internal/db"
 	"review_service/internal/models"
 )
 
-func GetReviews(data []uint64) ([]models.Review, error) {
+type ReviewRepository interface {
+	GetReviews(ctx context.Context, data []uint64) ([]models.Review, error)
+	CreateReview(ctx context.Context, review models.Review) error
+	GetProductReviewsStatsHandler(ctx context.Context, productIDs []uint64) ([]models.ProductReviewStat, error)
+}
+
+type repoReview struct {
+	db *gorm.DB
+}
+
+func NewReviewRepository(db *gorm.DB) ReviewRepository {
+	return &repoReview{db: db}
+}
+
+func (r *repoReview) GetReviews(ctx context.Context, data []uint64) ([]models.Review, error) {
 	var reviews []models.Review
 
-	err := db.DB().Where("product_id in ?", data).Find(&reviews).Error
+	err := r.db.WithContext(ctx).Where("product_id in ?", data).Find(&reviews).Error
 	if err != nil {
 		return nil, err
 	}
@@ -18,14 +32,14 @@ func GetReviews(data []uint64) ([]models.Review, error) {
 	return reviews, nil
 }
 
-func CreateReview(review models.Review) error {
-	err := db.DB().Save(&review).Error
+func (r *repoReview) CreateReview(ctx context.Context, review models.Review) error {
+	err := r.db.WithContext(ctx).Save(&review).Error
 	return err
 }
 
-func GetProductReviewsStatsHandler(productIDs []uint64) ([]models.ProductReviewStat, error) {
+func (r *repoReview) GetProductReviewsStatsHandler(ctx context.Context, productIDs []uint64) ([]models.ProductReviewStat, error) {
 	var rows []models.ProductReviewStat
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Model(&models.Review{}).
 		Select("product_id, AVG(rating) AS avg_rating, COUNT(*) AS count_review").
 		Where("product_id IN ?", productIDs).

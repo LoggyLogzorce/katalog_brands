@@ -5,32 +5,32 @@ import (
 	"user_service/internal/api"
 )
 
-func SetRouters() *gin.Engine {
+func SetRouters(h *api.ReviewHandler) *gin.Engine {
 	r := gin.Default()
 
 	apiGroup := r.Group("/api/v1")
 	{
-		apiGroup.GET("/profile", api.GetProfileInfoHandler)
-		apiGroup.GET("/user-data", api.GetUserDataHandler)
-		apiGroup.GET("/get/users", api.GetUsersHandler)
-		apiGroup.PUT("/update_role", api.UpdateRoleHandler)
+		apiGroup.GET("/profile", h.GetProfileInfoHandler)
+		apiGroup.GET("/user-data", h.GetUserDataHandler)
+		apiGroup.GET("/get/users", h.GetUsersHandler)
+		apiGroup.PUT("/update_role", h.UpdateRoleHandler)
 
 		favGroup := apiGroup.Group("/favorites")
 		{
-			favGroup.GET("/", api.GetFavoritesHandler)
-			favGroup.POST("/:id", api.CreateFavoriteHandler)
-			favGroup.DELETE("/:id", api.DeleteFavoriteHandler)
-			favGroup.DELETE("/", api.ClearFavoriteHandler)
+			favGroup.GET("/", h.GetFavoritesHandler)
+			favGroup.POST("/:id", h.CreateFavoriteHandler)
+			favGroup.DELETE("/:id", h.DeleteFavoriteHandler)
+			favGroup.DELETE("/", h.ClearFavoriteHandler)
 		}
 
 		hisGroup := apiGroup.Group("/view-history")
 		{
-			hisGroup.GET("/", api.GetViewHistoryHandler)
-			hisGroup.POST("/:id", api.CreateViewProductHandler)
-			hisGroup.DELETE("/:id", api.DeleteViewProductHandler)
-			hisGroup.DELETE("/", api.ClearViewHistoryHandler)
+			hisGroup.GET("/", h.GetViewHistoryHandler)
+			hisGroup.POST("/:id", h.CreateViewProductHandler)
+			hisGroup.DELETE("/:id", h.DeleteViewProductHandler)
+			hisGroup.DELETE("/", h.ClearViewHistoryHandler)
 		}
-		apiGroup.GET("/product_views_stats", api.GetProductViewsStatsHandler)
+		apiGroup.GET("/product_views_stats", h.GetProductViewsStatsHandler)
 	}
 
 	return r

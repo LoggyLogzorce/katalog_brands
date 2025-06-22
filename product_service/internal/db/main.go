@@ -25,7 +25,7 @@ func DB() *gorm.DB {
 	return database
 }
 
-func Connect() {
+func Connect() *gorm.DB {
 	db, err := gorm.Open(postgres.Open(connect), &gorm.Config{
 		SkipDefaultTransaction: true,
 	})
@@ -35,4 +35,5 @@ func Connect() {
 
 	database = db
 	log.Println("Connected to the database")
+	return db
 }

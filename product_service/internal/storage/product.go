@@ -1,15 +1,36 @@
 package storage
 
 import (
+	"context"
 	"gorm.io/gorm"
-	"product_service/internal/db"
 	"product_service/internal/models"
 )
 
-func SelectProduct(data []uint64, status string) ([]models.Product, error) {
+type ProductRepository interface {
+	SelectProduct(ctx context.Context, data []uint64, status string) ([]models.Product, error)
+	SelectProductsInCategory(ctx context.Context, categoryID, productStatus string) ([]models.Product, error)
+	SelectProductsInBrand(ctx context.Context, brandID, productStatus string) ([]models.Product, error)
+	GetProductCountsByBrand(ctx context.Context, brandIDs []uint64, role string) (map[uint64]int, error)
+	GetProducts(ctx context.Context, status string, limit int) ([]models.Product, error)
+	GetProduct(ctx context.Context, productID, brandID, status string) (models.Product, error)
+	GetProductsInBrands(ctx context.Context, brandsID []uint64) ([]models.Product, error)
+	CreateProduct(ctx context.Context, data models.Product, urls []models.ProductUrls) (models.Product, error)
+	UpdateProduct(ctx context.Context, data models.Product) error
+	Delete(ctx context.Context, brandID, productID, status string) error
+}
+
+type repoProduct struct {
+	db *gorm.DB
+}
+
+func NewProductRepository(db *gorm.DB) ProductRepository {
+	return &repoProduct{db: db}
+}
+
+func (r *repoProduct) SelectProduct(ctx context.Context, data []uint64, status string) ([]models.Product, error) {
 	var products []models.Product
 
-	if err := db.DB().
+	if err := r.db.WithContext(ctx).
 		Preload("ProductUrls").
 		Preload("Category").
 		Where("status=?", status).
@@ -20,11 +41,11 @@ func SelectProduct(data []uint64, status string) ([]models.Product, error) {
 	return products, nil
 }
 
-func SelectProductsInCategory(categoryID, productStatus string) ([]models.Product, error) {
+func (r *repoProduct) SelectProductsInCategory(ctx context.Context, categoryID, productStatus string) ([]models.Product, error) {
 	var products []models.Product
 
 	if productStatus == "all" {
-		err := db.DB().
+		err := r.db.WithContext(ctx).
 			Preload("ProductUrls").
 			Preload("Category").
 			Where("category_id=?", categoryID).
@@ -35,7 +56,7 @@ func SelectProductsInCategory(categoryID, productStatus string) ([]models.Produc
 		return products, nil
 	}
 
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Preload("ProductUrls").
 		Preload("Category").
 		Where("category_id=? and status=?", categoryID, productStatus).
@@ -46,11 +67,11 @@ func SelectProductsInCategory(categoryID, productStatus string) ([]models.Produc
 	return products, nil
 }
 
-func SelectProductsInBrand(brandID, productStatus string) ([]models.Product, error) {
+func (r *repoProduct) SelectProductsInBrand(ctx context.Context, brandID, productStatus string) ([]models.Product, error) {
 	var products []models.Product
 
 	if productStatus == "all" {
-		err := db.DB().
+		err := r.db.WithContext(ctx).
 			Preload("ProductUrls").
 			Preload("Category").
 			Where("brand_id=?", brandID).
@@ -61,7 +82,7 @@ func SelectProductsInBrand(brandID, productStatus string) ([]models.Product, err
 		return products, nil
 	}
 
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Preload("ProductUrls").
 		Preload("Category").
 		Where("brand_id=? and status=?", brandID, productStatus).
@@ -73,7 +94,7 @@ func SelectProductsInBrand(brandID, productStatus string) ([]models.Product, err
 	return products, nil
 }
 
-func GetProductCountsByBrand(brandIDs []uint64, role string) (map[uint64]int, error) {
+func (r *repoProduct) GetProductCountsByBrand(ctx context.Context, brandIDs []uint64, role string) (map[uint64]int, error) {
 	type row struct {
 		BrandID uint64 `gorm:"column:brand_id"`
 		Count   int    `gorm:"column:count"`
@@ -81,7 +102,7 @@ func GetProductCountsByBrand(brandIDs []uint64, role string) (map[uint64]int, er
 	var rows []row
 
 	if role == "creator" {
-		err := db.DB().
+		err := r.db.WithContext(ctx).
 			Model(&models.Product{}).
 			Select("brand_id, COUNT(*) AS count").
 			Where("brand_id IN ?", brandIDs).
@@ -100,7 +121,7 @@ func GetProductCountsByBrand(brandIDs []uint64, role string) (map[uint64]int, er
 		return result, nil
 	}
 
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Model(&models.Product{}).
 		Select("brand_id, COUNT(*) AS count").
 		Where("brand_id IN ? and status='approved'", brandIDs).
@@ -119,11 +140,11 @@ func GetProductCountsByBrand(brandIDs []uint64, role string) (map[uint64]int, er
 	return result, nil
 }
 
-func GetProducts(status string, limit int) ([]models.Product, error) {
+func (r *repoProduct) GetProducts(ctx context.Context, status string, limit int) ([]models.Product, error) {
 	var products []models.Product
 
 	if status == "admin" {
-		err := db.DB().
+		err := r.db.WithContext(ctx).
 			Preload("ProductUrls").
 			Preload("Category").
 			Limit(limit).
@@ -136,7 +157,7 @@ func GetProducts(status string, limit int) ([]models.Product, error) {
 		return products, nil
 	}
 
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Preload("ProductUrls").
 		Preload("Category").
 		Where("status=?", status).
@@ -150,11 +171,11 @@ func GetProducts(status string, limit int) ([]models.Product, error) {
 	return products, nil
 }
 
-func GetProduct(productID, brandID, status string) (models.Product, error) {
+func (r *repoProduct) GetProduct(ctx context.Context, productID, brandID, status string) (models.Product, error) {
 	var product models.Product
 
 	if status == "creator" {
-		err := db.DB().
+		err := r.db.WithContext(ctx).
 			Preload("ProductUrls").
 			Preload("Category").
 			Where("id=? and brand_id=?", productID, brandID).
@@ -167,7 +188,7 @@ func GetProduct(productID, brandID, status string) (models.Product, error) {
 		return product, nil
 	}
 
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Preload("ProductUrls").
 		Preload("Category").
 		Where("id=? and brand_id=? and status=?", productID, brandID, status).
@@ -180,10 +201,10 @@ func GetProduct(productID, brandID, status string) (models.Product, error) {
 	return product, nil
 }
 
-func GetProductsInBrands(brandsID []uint64) ([]models.Product, error) {
+func (r *repoProduct) GetProductsInBrands(ctx context.Context, brandsID []uint64) ([]models.Product, error) {
 	var products []models.Product
 
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Preload("ProductUrls").
 		Preload("Category").
 		Where("brand_id in ?", brandsID).
@@ -195,7 +216,7 @@ func GetProductsInBrands(brandsID []uint64) ([]models.Product, error) {
 	return products, nil
 }
 
-func CreateProduct(data models.Product, urls []models.ProductUrls) (models.Product, error) {
+func (r *repoProduct) CreateProduct(ctx context.Context, data models.Product, urls []models.ProductUrls) (models.Product, error) {
 	product := models.Product{
 		BrandID:     data.BrandID,
 		CategoryID:  data.CategoryID,
@@ -205,7 +226,7 @@ func CreateProduct(data models.Product, urls []models.ProductUrls) (models.Produ
 		Status:      data.Status,
 		CreatedAt:   data.CreatedAt,
 	}
-	err := db.DB().Transaction(func(tx *gorm.DB) error {
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(&product).Error; err != nil {
 			return err
 		}
@@ -214,7 +235,7 @@ func CreateProduct(data models.Product, urls []models.ProductUrls) (models.Produ
 			urls[i].ProductID = product.ID
 		}
 
-		if err := db.DB().Create(&urls).Error; err != nil {
+		if err := tx.Create(&urls).Error; err != nil {
 			return err
 		}
 
@@ -224,8 +245,8 @@ func CreateProduct(data models.Product, urls []models.ProductUrls) (models.Produ
 	return product, err
 }
 
-func DeleteProduct(brandID, productID, status string) error {
-	err := db.DB().Transaction(func(tx *gorm.DB) error {
+func (r *repoProduct) Delete(ctx context.Context, brandID, productID, status string) error {
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.
 			Model(&models.ProductUrls{}).
 			Where("product_id = ?", productID).
@@ -257,7 +278,7 @@ func DeleteProduct(brandID, productID, status string) error {
 	return err
 }
 
-func UpdateProduct(data models.Product) error {
+func (r *repoProduct) UpdateProduct(ctx context.Context, data models.Product) error {
 	product := models.Product{
 		ID:          data.ID,
 		BrandID:     data.BrandID,
@@ -268,7 +289,7 @@ func UpdateProduct(data models.Product) error {
 		Status:      data.Status,
 		CreatedAt:   data.CreatedAt,
 	}
-	err := db.DB().Transaction(func(tx *gorm.DB) error {
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Omit("created_at").Save(&product).Error; err != nil {
 			return err
 		}
@@ -285,7 +306,7 @@ func UpdateProduct(data models.Product) error {
 			return err
 		}
 
-		if err := db.DB().Create(&data.ProductUrls).Error; err != nil {
+		if err := tx.Create(&data.ProductUrls).Error; err != nil {
 			return err
 		}
 

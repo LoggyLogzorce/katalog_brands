@@ -10,6 +10,14 @@ import (
 	"time"
 )
 
+type ReviewHandler struct {
+	Repo storage.ReviewRepository
+}
+
+func NewReviewHandler(revRepo storage.ReviewRepository) *ReviewHandler {
+	return &ReviewHandler{Repo: revRepo}
+}
+
 type ProductStatsReq struct {
 	ProductIDs []uint64 `json:"product_ids"`
 }
@@ -23,7 +31,7 @@ type ReviewsRequest struct {
 	ProductsID []uint64 `json:"products_id"`
 }
 
-func GetReviewsHandler(c *gin.Context) {
+func (h *ReviewHandler) GetReviewsHandler(c *gin.Context) {
 	var data ReviewsRequest
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
 		log.Println("AvgRatingHandler: ошибка разбора данных из запроса", err)
@@ -31,7 +39,7 @@ func GetReviewsHandler(c *gin.Context) {
 		return
 	}
 
-	reviews, err := storage.GetReviews(data.ProductsID)
+	reviews, err := h.Repo.GetReviews(c.Request.Context(), data.ProductsID)
 	if err != nil {
 		log.Println("AvgRatingHandler: ошибка получения отзывов о товаре", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка получения отзывов о товаре"})
@@ -41,7 +49,7 @@ func GetReviewsHandler(c *gin.Context) {
 	c.JSON(200, reviews)
 }
 
-func CreateReviewHandler(c *gin.Context) {
+func (h *ReviewHandler) CreateReviewHandler(c *gin.Context) {
 	productID := c.Param("pID")
 	userID := c.GetHeader("X-User-ID")
 	var data ReviewRequest
@@ -73,7 +81,7 @@ func CreateReviewHandler(c *gin.Context) {
 		CreatedAt: time.Now(),
 	}
 
-	err = storage.CreateReview(review)
+	err = h.Repo.CreateReview(c.Request.Context(), review)
 	if err != nil {
 		log.Println("CreateReviewHandler: ошибка создания отзыва", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка создания отзыва"})
@@ -83,7 +91,7 @@ func CreateReviewHandler(c *gin.Context) {
 	c.JSON(201, gin.H{})
 }
 
-func GetProductReviewsStatsHandler(c *gin.Context) {
+func (h *ReviewHandler) GetProductReviewsStatsHandler(c *gin.Context) {
 	var req ProductStatsReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		log.Println("GetProductReviewsStatsHandler: некорректный запрос", err)
@@ -93,7 +101,7 @@ func GetProductReviewsStatsHandler(c *gin.Context) {
 
 	fmt.Println(req)
 
-	rows, err := storage.GetProductReviewsStatsHandler(req.ProductIDs)
+	rows, err := h.Repo.GetProductReviewsStatsHandler(c.Request.Context(), req.ProductIDs)
 	if err != nil {
 		log.Println("GetProductReviewsStatsHandler: ошибка БД", err)
 		c.AbortWithStatusJSON(500, gin.H{})
