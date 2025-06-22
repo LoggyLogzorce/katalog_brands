@@ -73,14 +73,14 @@ func GetBrandById(id string) (models.Brand, error) {
 	return brand, nil
 }
 
-func UpdateBrandInfo(brand models.Brand) error {
+func UpdateBrandInfo(brand models.Brand) (models.Brand, error) {
 	err := db.DB().Save(&brand).Error
-	return err
+	return brand, err
 }
 
-func CreateBrand(brand models.Brand) error {
+func CreateBrand(brand models.Brand) (models.Brand, error) {
 	err := db.DB().Create(&brand).Error
-	return err
+	return brand, err
 }
 
 func DeleteBrand(brandId string) error {

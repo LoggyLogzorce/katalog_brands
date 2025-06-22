@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
+	"net/http"
 	"product_service/internal/models"
 	"product_service/internal/storage"
 	"strconv"
@@ -219,43 +220,36 @@ func GetProductInBrandsHandler(c *gin.Context) {
 
 func CreateProductHandler(c *gin.Context) {
 	var product models.Product
-	if err := c.ShouldBindBodyWithJSON(&product); err != nil {
-		log.Println("CreateProductHandler: не удалось получить данные из запроса", err)
-		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить данные из запроса"})
+	if err := c.ShouldBindJSON(&product); err != nil {
+		log.Println("CreateProductHandler:", err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "не удалось получить данные"})
 		return
 	}
 
 	if product.Status == "" {
 		product.Status = "pending"
 	}
-
 	product.CreatedAt = time.Now()
 
-	urls := product.ProductUrls
-
-	err := storage.CreateProduct(product, urls)
+	// сохраняем в БД
+	product, err := storage.CreateProduct(product, product.ProductUrls)
 	if err != nil {
-		log.Println("CreateProductHandler: не удалось сохранить товар", err)
-		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось сохранить товар"})
+		log.Println("CreateProductHandler:", err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "не удалось сохранить товар"})
 		return
 	}
 
-	c.JSON(201, gin.H{})
-}
+	go func() {
+		product, err = storage.GetProduct(strconv.FormatUint(product.ID, 10), strconv.FormatUint(product.BrandID, 10), product.Status)
+		if err != nil {
+			log.Println("CreateProductHandler: не удалось получить товар для индексации", err)
+			return
+		}
 
-func DeleteProductHandler(c *gin.Context) {
-	brandID := c.Param("id")
-	productID := c.Param("pId")
-	status := c.Query("status")
+		CreateUpdateIndexProduct(product)
+	}()
 
-	err := storage.DeleteProduct(brandID, productID, status)
-	if err != nil {
-		log.Println("DeleteProductHandler: не удалось удалить товар", err)
-		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить товар"})
-		return
-	}
-
-	c.JSON(200, gin.H{})
+	c.JSON(http.StatusCreated, gin.H{})
 }
 
 func UpdateProductHandler(c *gin.Context) {
@@ -290,6 +284,33 @@ func UpdateProductHandler(c *gin.Context) {
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось обновить данные товара"})
 		return
 	}
+
+	go func() {
+		product, err := storage.GetProduct(strconv.FormatUint(data.ID, 10), strconv.FormatUint(data.BrandID, 10), data.Status)
+		if err != nil {
+			log.Println("UpdateProductHandler: не удалось получить товар для индексации", err)
+			return
+		}
+
+		CreateUpdateIndexProduct(product)
+	}()
+
+	c.JSON(200, gin.H{})
+}
+
+func DeleteProductHandler(c *gin.Context) {
+	brandID := c.Param("id")
+	productID := c.Param("pId")
+	status := c.Query("status")
+
+	err := storage.DeleteProduct(brandID, productID, status)
+	if err != nil {
+		log.Println("DeleteProductHandler: не удалось удалить товар", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить товар"})
+		return
+	}
+
+	go DeleteIndexProduct(productID)
 
 	c.JSON(200, gin.H{})
 }

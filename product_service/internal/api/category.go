@@ -33,12 +33,14 @@ func CreateCategoryHandler(c *gin.Context) {
 		return
 	}
 
-	err := storage.CreateCategory(data)
+	category, err := storage.CreateCategory(data)
 	if err != nil {
 		log.Println("CreateCategoryHandler: не удалось сохранить категорию", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось сохранить категорию"})
 		return
 	}
+
+	go CreateUpdateIndexCategory(category)
 
 	c.JSON(201, gin.H{})
 }
@@ -58,6 +60,15 @@ func UpdateCategoryHandler(c *gin.Context) {
 		return
 	}
 
+	go func() {
+		category, err := storage.GetCategory(data.ID)
+		if err != nil {
+			log.Println("UpdateCategoryHandler: не удалось найти категорию для индексации", err)
+			return
+		}
+		CreateUpdateIndexCategory(category)
+	}()
+
 	c.JSON(200, gin.H{})
 }
 
@@ -70,6 +81,8 @@ func DeleteCategoryHandler(c *gin.Context) {
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить категорию"})
 		return
 	}
+
+	go DeleteIndexCategory(categoryID)
 
 	c.JSON(200, gin.H{})
 }

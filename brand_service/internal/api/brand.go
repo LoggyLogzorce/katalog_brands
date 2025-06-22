@@ -1,6 +1,7 @@
 package api
 
 import (
+	"brand_service/internal/es"
 	"brand_service/internal/models"
 	"brand_service/internal/storage"
 	"errors"
@@ -10,8 +11,13 @@ import (
 	"strconv"
 )
 
+var (
+	esClient, _ = es.NewClient()
+	indexer     = es.NewIndexer(esClient)
+)
+
 type BrandRequest struct {
-	BrandsID []uint64 `json:"brands_id"`
+	BrandsID []uint64 `json:"brand_ids"`
 }
 
 func GetAllBrands(c *gin.Context) {
@@ -39,6 +45,13 @@ func GetBrandInfo(c *gin.Context) {
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
 		log.Println("GetBrandInfo: не удалось получить данные из запроса", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить данные из запроса"})
+		return
+	}
+
+	var brand []models.Brand
+
+	if len(data.BrandsID) == 0 {
+		c.JSON(200, brand)
 		return
 	}
 
@@ -87,6 +100,28 @@ func GetBrandByID(c *gin.Context) {
 	c.JSON(200, brand)
 }
 
+func CreateBrand(c *gin.Context) {
+	var brand models.Brand
+	if err := c.ShouldBindBodyWithJSON(&brand); err != nil {
+		log.Println("CreateBrand: не удалось получить данные из запроса", err)
+		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить данные из запроса"})
+		return
+	}
+
+	brand.Status = "pending"
+
+	brand, err := storage.CreateBrand(brand)
+	if err != nil {
+		log.Println("CreateBrand: ошибка создания бренда", err)
+		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка создания бренда"})
+		return
+	}
+
+	go CreateUpdateIndex(brand)
+
+	c.JSON(200, gin.H{})
+}
+
 func UpdateBrand(c *gin.Context) {
 	var brand models.Brand
 	if err := c.ShouldBindBodyWithJSON(&brand); err != nil {
@@ -101,32 +136,14 @@ func UpdateBrand(c *gin.Context) {
 		brand.Status = "pending"
 	}
 
-	err := storage.UpdateBrandInfo(brand)
+	brand, err := storage.UpdateBrandInfo(brand)
 	if err != nil {
 		log.Println("UpdateBrand: ошибка обновления данных бренда", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка обновления данных бренда"})
 		return
 	}
 
-	c.JSON(200, gin.H{})
-}
-
-func CreateBrand(c *gin.Context) {
-	var brand models.Brand
-	if err := c.ShouldBindBodyWithJSON(&brand); err != nil {
-		log.Println("CreateBrand: не удалось получить данные из запроса", err)
-		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить данные из запроса"})
-		return
-	}
-
-	brand.Status = "pending"
-
-	err := storage.CreateBrand(brand)
-	if err != nil {
-		log.Println("CreateBrand: ошибка создания бренда", err)
-		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка создания бренда"})
-		return
-	}
+	go CreateUpdateIndex(brand)
 
 	c.JSON(200, gin.H{})
 }
@@ -140,6 +157,8 @@ func DeleteBrand(c *gin.Context) {
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить бренд"})
 		return
 	}
+
+	go DeleteIndex(brandID)
 
 	c.JSON(200, gin.H{})
 }

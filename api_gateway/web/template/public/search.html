@@ -1,0 +1,74 @@
+{{ template "base" . }}
+<link href="/static/css/public/index.css" rel="stylesheet">
+</head>
+<body>
+
+{{ template "header" . }}
+
+<!-- Секция заголовка с поиском -->
+<section class="search-results-hero">
+    <div class="container">
+        <div class="brand-header">
+            <h1 class="brand-title">Результаты поиска</h1>
+            <p class="brand-description">Найдено 24 товара, 5 брендов и 3 категории</p>
+
+            <div class="search-container">
+                <div class="search-bar">
+                    <input type="text" placeholder="Поиск товаров, категорий, брендов..." class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Найти
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Секция с категориями -->
+<section class="section categories">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Категории</h2>
+            <a href="/categories" class="view-all">
+                Показать все категории <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="categories-grid"></div>
+    </div>
+</section>
+
+<!-- Секция с брендами -->
+<section class="section brands">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Бренды</h2>
+            <a href="/brands" class="view-all">
+                Показать все бренды <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="brands-grid"></div>
+    </div>
+</section>
+
+<!-- Секция с товарами -->
+<section class="section products">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Товары</h2>
+            <a href="/products" class="view-all">
+                Показать все товары <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="products-grid"></div>
+    </div>
+</section>
+
+<script src="/static/js/public/search.js"></script>
+<script src="/static/js/public/render_rating.js"></script>
+<script src="/static/js/public/fav_history.js"></script>
+<script src="/static/js/public/update_favorite.js"></script>
+
+{{ template "footer" . }}

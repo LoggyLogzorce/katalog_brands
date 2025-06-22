@@ -195,7 +195,7 @@ func GetProductsInBrands(brandsID []uint64) ([]models.Product, error) {
 	return products, nil
 }
 
-func CreateProduct(data models.Product, urls []models.ProductUrls) error {
+func CreateProduct(data models.Product, urls []models.ProductUrls) (models.Product, error) {
 	product := models.Product{
 		BrandID:     data.BrandID,
 		CategoryID:  data.CategoryID,
@@ -221,7 +221,7 @@ func CreateProduct(data models.Product, urls []models.ProductUrls) error {
 		return nil
 	})
 
-	return err
+	return product, err
 }
 
 func DeleteProduct(brandID, productID, status string) error {

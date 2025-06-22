@@ -40,7 +40,7 @@ func ViewHistoryHandler(c *gin.Context) {
 		viewHistoryID = append(viewHistoryID, v.ProductID)
 	}
 
-	productsID := models.ProfileProductRequest{
+	productsID := models.ProductRequest{
 		ViewHistory: viewHistoryID,
 	}
 
