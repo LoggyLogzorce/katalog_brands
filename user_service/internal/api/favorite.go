@@ -4,13 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
-	"user_service/internal/storage"
 )
 
-func GetFavoritesHandler(c *gin.Context) {
+func (h *ReviewHandler) GetFavoritesHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 
-	favorites, err := storage.SelectFavorite(userID, -1)
+	favorites, err := h.Repo.SelectFavorite(c.Request.Context(), userID, -1)
 	if err != nil {
 		log.Println("GetFavoritesHandler: ошибка получения избранного", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения избранного", "error_sys": err})
@@ -20,7 +19,7 @@ func GetFavoritesHandler(c *gin.Context) {
 	c.JSON(200, favorites)
 }
 
-func CreateFavoriteHandler(c *gin.Context) {
+func (h *ReviewHandler) CreateFavoriteHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 	productID := c.Param("id")
 
@@ -46,7 +45,7 @@ func CreateFavoriteHandler(c *gin.Context) {
 		return
 	}
 
-	if err = storage.CreateFavorite(userIdUint, productIDUint); err != nil {
+	if err = h.Repo.CreateFavorite(c.Request.Context(), userIdUint, productIDUint); err != nil {
 		log.Println("CreateFavoriteHandler: ошибка добавления товара в избранное", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка добавления товара в избранное", "error_sys": err})
 		return
@@ -56,11 +55,11 @@ func CreateFavoriteHandler(c *gin.Context) {
 
 }
 
-func DeleteFavoriteHandler(c *gin.Context) {
+func (h *ReviewHandler) DeleteFavoriteHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 	productID := c.Param("id")
 
-	if err := storage.DeleteFavorite(userID, productID); err != nil {
+	if err := h.Repo.DeleteFavorite(c.Request.Context(), userID, productID); err != nil {
 		log.Println("DeleteFavoriteHandler: ошибка удаления товара из избранного", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка удаления товара из избранного", "error_sys": err})
 		return
@@ -69,10 +68,10 @@ func DeleteFavoriteHandler(c *gin.Context) {
 	c.JSON(200, gin.H{})
 }
 
-func ClearFavoriteHandler(c *gin.Context) {
+func (h *ReviewHandler) ClearFavoriteHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 
-	if err := storage.DeleteFavorite(userID, ""); err != nil {
+	if err := h.Repo.DeleteFavorite(c.Request.Context(), userID, ""); err != nil {
 		log.Println("ClearFavoriteHandler: ошибка очистки избраного", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка очистки избраного", "error_sys": err})
 		return

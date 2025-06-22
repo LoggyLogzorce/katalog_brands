@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"user_service/internal/storage"
 )
 
 type ViewCountRequest struct {
@@ -16,10 +15,10 @@ type ProductStatsReq struct {
 	ProductIDs []uint64 `json:"product_ids"`
 }
 
-func GetViewHistoryHandler(c *gin.Context) {
+func (h *ReviewHandler) GetViewHistoryHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 
-	history, err := storage.SelectHistory(userID, -1)
+	history, err := h.Repo.SelectHistory(c.Request.Context(), userID, -1)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка получения истории просмотра", "error_sys": err})
 		return
@@ -28,7 +27,7 @@ func GetViewHistoryHandler(c *gin.Context) {
 	c.JSON(200, history)
 }
 
-func CreateViewProductHandler(c *gin.Context) {
+func (h *ReviewHandler) CreateViewProductHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 	productID := c.Param("id")
 
@@ -54,7 +53,7 @@ func CreateViewProductHandler(c *gin.Context) {
 		return
 	}
 
-	ok, err := storage.SelectView(userIdUint, productIDUint)
+	ok, err := h.Repo.SelectView(c.Request.Context(), userIdUint, productIDUint)
 	if err != nil {
 		log.Println("SelectView error:", err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
@@ -66,7 +65,7 @@ func CreateViewProductHandler(c *gin.Context) {
 		return
 	}
 
-	if err = storage.CreateView(userIdUint, productIDUint); err != nil {
+	if err = h.Repo.CreateView(c.Request.Context(), userIdUint, productIDUint); err != nil {
 		log.Println("CreateViewProductHandler: ошибка добавления просмотра товара", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка добавления просмотра товара", "error_sys": err})
 		return
@@ -75,11 +74,11 @@ func CreateViewProductHandler(c *gin.Context) {
 	c.JSON(201, gin.H{})
 }
 
-func DeleteViewProductHandler(c *gin.Context) {
+func (h *ReviewHandler) DeleteViewProductHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 	productID := c.Param("id")
 
-	if err := storage.DeleteViewHistory(userID, productID); err != nil {
+	if err := h.Repo.DeleteViewHistory(c.Request.Context(), userID, productID); err != nil {
 		log.Println("DeleteViewHistoryHandler: ошибка удаления товара из избранного", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка удаления товара из избранного", "error_sys": err})
 		return
@@ -88,10 +87,10 @@ func DeleteViewProductHandler(c *gin.Context) {
 	c.JSON(200, gin.H{})
 }
 
-func ClearViewHistoryHandler(c *gin.Context) {
+func (h *ReviewHandler) ClearViewHistoryHandler(c *gin.Context) {
 	userID := c.GetHeader("X-User-ID")
 
-	if err := storage.DeleteViewHistory(userID, ""); err != nil {
+	if err := h.Repo.DeleteViewHistory(c.Request.Context(), userID, ""); err != nil {
 		log.Println("ClearFavoriteHandler: ошибка очистки избраного", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "ошибка очистки избраного", "error_sys": err})
 		return
@@ -100,7 +99,7 @@ func ClearViewHistoryHandler(c *gin.Context) {
 	c.JSON(200, gin.H{})
 }
 
-func CountViewProductHandler(c *gin.Context) {
+func (h *ReviewHandler) CountViewProductHandler(c *gin.Context) {
 	var data ViewCountRequest
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
 		log.Println("CountViewProductHandler: ошибка разбора запроса", err)
@@ -108,7 +107,7 @@ func CountViewProductHandler(c *gin.Context) {
 		return
 	}
 
-	count, err := storage.CountView(data.ProductsID)
+	count, err := h.Repo.CountView(c.Request.Context(), data.ProductsID)
 	if err != nil {
 		log.Println("CountViewProductHandler: ошибка получения количества просмотров", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка получения количества просмотров"})
@@ -120,14 +119,14 @@ func CountViewProductHandler(c *gin.Context) {
 	})
 }
 
-func GetProductViewsStatsHandler(c *gin.Context) {
+func (h *ReviewHandler) GetProductViewsStatsHandler(c *gin.Context) {
 	var req ProductStatsReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "некорректный запрос"})
 		return
 	}
 
-	rows, err := storage.GetProductViewsStats(req.ProductIDs)
+	rows, err := h.Repo.GetProductViewsStats(c.Request.Context(), req.ProductIDs)
 	if err != nil {
 		log.Println("GetProductViewsStatsHandler: ошибка БД", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка БД"})

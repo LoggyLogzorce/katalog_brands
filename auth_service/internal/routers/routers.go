@@ -5,14 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetRouters() *gin.Engine {
+func SetRouters(auth *api.AuthHandler) *gin.Engine {
 	r := gin.Default()
 
 	apiGroup := r.Group("/api/v1")
 	{
-		apiGroup.POST("/register", api.Register)
-		apiGroup.POST("/login", api.Login)
-		apiGroup.GET("/validate", api.Validate)
+		apiGroup.POST("/register", auth.Register)
+		apiGroup.POST("/login", auth.Login)
+		apiGroup.GET("/validate", auth.Validate)
 	}
 
 	return r

@@ -7,11 +7,19 @@ import (
 	"user_service/internal/storage"
 )
 
+type ReviewHandler struct {
+	Repo storage.UserRepository
+}
+
+func NewReviewHandler(userRepo storage.UserRepository) *ReviewHandler {
+	return &ReviewHandler{Repo: userRepo}
+}
+
 type UserDataRequest struct {
 	UsersID []uint64 `json:"users_id"`
 }
 
-func GetUserDataHandler(c *gin.Context) {
+func (h *ReviewHandler) GetUserDataHandler(c *gin.Context) {
 	var data UserDataRequest
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
 		log.Println("GetUserData: ошибка разбора данных из запроса", err)
@@ -25,7 +33,7 @@ func GetUserDataHandler(c *gin.Context) {
 		limit = -1
 	}
 
-	usersData, err := storage.SelectUsers(data.UsersID, limit)
+	usersData, err := h.Repo.SelectUsers(c.Request.Context(), data.UsersID, limit)
 	if err != nil {
 		log.Println("GetUserData: ошибка получения данных о пользователях", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка получения данных о пользователях"})
@@ -35,8 +43,8 @@ func GetUserDataHandler(c *gin.Context) {
 	c.JSON(200, usersData)
 }
 
-func GetUsersHandler(c *gin.Context) {
-	users, err := storage.GetUsers()
+func (h *ReviewHandler) GetUsersHandler(c *gin.Context) {
+	users, err := h.Repo.GetUsers(c.Request.Context())
 	if err != nil {
 		log.Println("GetUsers: ошибка получения данных о пользователях", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка получения данных о пользователях"})

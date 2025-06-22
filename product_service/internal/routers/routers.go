@@ -5,24 +5,24 @@ import (
 	"product_service/internal/api"
 )
 
-func SetRouters() *gin.Engine {
+func SetRouters(catHandler *api.CategoryHandler, prodHandler *api.ProductHandler) *gin.Engine {
 	r := gin.Default()
 
 	apiGroup := r.Group("/api/v1")
 	{
-		apiGroup.GET("/products/:status", api.GetProductsHandler)
-		apiGroup.GET("/categories", api.GetCategoriesHandler)
-		apiGroup.GET("/category/:id/products/:status", api.GetProductInCategoryHandler)
-		apiGroup.POST("/category/create", api.CreateCategoryHandler)
-		apiGroup.PUT("/category/update/:id", api.UpdateCategoryHandler)
-		apiGroup.DELETE("/category/delete/:id", api.DeleteCategoryHandler)
-		apiGroup.GET("/brand/:id/products/:status", api.GetProductInBrandHandler)
-		apiGroup.GET("/brands/products", api.GetProductInBrandsHandler)
-		apiGroup.GET("/brand/:id/product/:pId", api.GetProductHandler)
-		apiGroup.DELETE("/brand/:id/product/:pId", api.DeleteProductHandler)
-		apiGroup.GET("/brands/count-product", api.CountProductInBrandHandler)
-		apiGroup.POST("/product/create", api.CreateProductHandler)
-		apiGroup.PUT("/product/:id", api.UpdateProductHandler)
+		apiGroup.GET("/products/:status", prodHandler.GetProductsHandler)
+		apiGroup.GET("/categories", catHandler.GetCategoriesHandler)
+		apiGroup.GET("/category/:id/products/:status", prodHandler.GetProductInCategoryHandler)
+		apiGroup.POST("/category/create", catHandler.CreateCategoryHandler)
+		apiGroup.PUT("/category/update/:id", catHandler.UpdateCategoryHandler)
+		apiGroup.DELETE("/category/delete/:id", catHandler.DeleteCategoryHandler)
+		apiGroup.GET("/brand/:id/products/:status", prodHandler.GetProductInBrandHandler)
+		apiGroup.GET("/brands/products", prodHandler.GetProductInBrandsHandler)
+		apiGroup.GET("/brand/:id/product/:pId", prodHandler.GetProductHandler)
+		apiGroup.DELETE("/brand/:id/product/:pId", prodHandler.DeleteProductHandler)
+		apiGroup.GET("/brands/count-product", prodHandler.CountProductInBrandHandler)
+		apiGroup.POST("/product/create", prodHandler.CreateProductHandler)
+		apiGroup.PUT("/product/:id", prodHandler.UpdateProductHandler)
 	}
 
 	return r

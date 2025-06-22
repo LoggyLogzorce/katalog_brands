@@ -1,7 +1,6 @@
 package api
 
 import (
-	"brand_service/internal/es"
 	"brand_service/internal/models"
 	"brand_service/internal/storage"
 	"errors"
@@ -11,16 +10,20 @@ import (
 	"strconv"
 )
 
-var (
-	esClient, _ = es.NewClient()
-	indexer     = es.NewIndexer(esClient)
-)
+type BrandHandler struct {
+	Repo      storage.BrandRepository
+	EsService EsService
+}
+
+func NewBrandHandler(brandRepo storage.BrandRepository, esService EsService) *BrandHandler {
+	return &BrandHandler{Repo: brandRepo, EsService: esService}
+}
 
 type BrandRequest struct {
 	BrandsID []uint64 `json:"brand_ids"`
 }
 
-func GetAllBrands(c *gin.Context) {
+func (h *BrandHandler) GetAllBrands(c *gin.Context) {
 	status := c.Param("status")
 	count := c.Query("count")
 	creatorID := c.Query("creatorID")
@@ -30,7 +33,7 @@ func GetAllBrands(c *gin.Context) {
 		limitInt = -1
 	}
 
-	brands, err := storage.GetAllBrands(status, creatorID, limitInt)
+	brands, err := h.Repo.GetAllBrands(c.Request.Context(), status, creatorID, limitInt)
 	if err != nil {
 		log.Println("GetAllBrands: не удалось получить информацию о брендах из бд", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить информацию о брендах"})
@@ -40,7 +43,7 @@ func GetAllBrands(c *gin.Context) {
 	c.JSON(200, brands)
 }
 
-func GetBrandInfo(c *gin.Context) {
+func (h *BrandHandler) GetBrandInfo(c *gin.Context) {
 	var data BrandRequest
 	if err := c.ShouldBindBodyWithJSON(&data); err != nil {
 		log.Println("GetBrandInfo: не удалось получить данные из запроса", err)
@@ -55,7 +58,7 @@ func GetBrandInfo(c *gin.Context) {
 		return
 	}
 
-	brand, err := storage.GetBrandInfoById(data.BrandsID)
+	brand, err := h.Repo.GetBrandInfoById(c.Request.Context(), data.BrandsID)
 	if err != nil {
 		log.Println("GetBrandInfo: не удалось получить информацию о бренде из бд", err)
 		c.AbortWithStatusJSON(400, gin.H{"error": "не удалось получить информацию о бренде"})
@@ -65,11 +68,11 @@ func GetBrandInfo(c *gin.Context) {
 	c.JSON(200, brand)
 }
 
-func GetBrand(c *gin.Context) {
+func (h *BrandHandler) GetBrand(c *gin.Context) {
 	brandName := c.Param("name")
 	creatorID := c.Query("creatorID")
 
-	brand, err := storage.GetBrandByName(brandName, creatorID)
+	brand, err := h.Repo.GetBrandByName(c.Request.Context(), brandName, creatorID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.AbortWithStatusJSON(404, gin.H{"error": "бред с данными названием не существует"})
@@ -83,10 +86,10 @@ func GetBrand(c *gin.Context) {
 	c.JSON(200, brand)
 }
 
-func GetBrandByID(c *gin.Context) {
+func (h *BrandHandler) GetBrandByID(c *gin.Context) {
 	brandID := c.Param("id")
 
-	brand, err := storage.GetBrandById(brandID)
+	brand, err := h.Repo.GetBrandById(c.Request.Context(), brandID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.AbortWithStatusJSON(404, gin.H{"error": "бред с данным названием не существует"})
@@ -100,7 +103,7 @@ func GetBrandByID(c *gin.Context) {
 	c.JSON(200, brand)
 }
 
-func CreateBrand(c *gin.Context) {
+func (h *BrandHandler) CreateBrand(c *gin.Context) {
 	var brand models.Brand
 	if err := c.ShouldBindBodyWithJSON(&brand); err != nil {
 		log.Println("CreateBrand: не удалось получить данные из запроса", err)
@@ -110,19 +113,19 @@ func CreateBrand(c *gin.Context) {
 
 	brand.Status = "pending"
 
-	brand, err := storage.CreateBrand(brand)
+	brand, err := h.Repo.CreateBrand(c.Request.Context(), brand)
 	if err != nil {
 		log.Println("CreateBrand: ошибка создания бренда", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка создания бренда"})
 		return
 	}
 
-	go CreateUpdateIndex(brand)
+	go h.EsService.CreateUpdateIndex(c.Request.Context(), brand)
 
 	c.JSON(200, gin.H{})
 }
 
-func UpdateBrand(c *gin.Context) {
+func (h *BrandHandler) UpdateBrand(c *gin.Context) {
 	var brand models.Brand
 	if err := c.ShouldBindBodyWithJSON(&brand); err != nil {
 		log.Println("UpdateBrand: не удалось получить данные из запроса", err)
@@ -136,29 +139,29 @@ func UpdateBrand(c *gin.Context) {
 		brand.Status = "pending"
 	}
 
-	brand, err := storage.UpdateBrandInfo(brand)
+	brand, err := h.Repo.UpdateBrandInfo(c.Request.Context(), brand)
 	if err != nil {
 		log.Println("UpdateBrand: ошибка обновления данных бренда", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "ошибка обновления данных бренда"})
 		return
 	}
 
-	go CreateUpdateIndex(brand)
+	go h.EsService.CreateUpdateIndex(c.Request.Context(), brand)
 
 	c.JSON(200, gin.H{})
 }
 
-func DeleteBrand(c *gin.Context) {
+func (h *BrandHandler) DeleteBrand(c *gin.Context) {
 	brandID := c.Param("id")
 
-	err := storage.DeleteBrand(brandID)
+	err := h.Repo.DeleteBrand(c.Request.Context(), brandID)
 	if err != nil {
 		log.Println("DeleteBrand: не удалось удалить бренд", err)
 		c.AbortWithStatusJSON(500, gin.H{"error": "не удалось удалить бренд"})
 		return
 	}
 
-	go DeleteIndex(brandID)
+	go h.EsService.DeleteIndex(c.Request.Context(), brandID)
 
 	c.JSON(200, gin.H{})
 }

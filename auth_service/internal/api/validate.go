@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func Validate(c *gin.Context) {
+func (h *AuthHandler) Validate(c *gin.Context) {
 	auth := c.GetHeader("Authorization")
 	if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "нет токена"})

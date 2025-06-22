@@ -8,17 +8,17 @@ import (
 	"github.com/elastic/go-elasticsearch/v7"
 )
 
-type Indexer interface {
-	IndexBrand(ctx context.Context, brand BrandDoc) error
+type IndexerRepository interface {
+	IndexBrand(ctx context.Context, b BrandDoc) error
 	DeleteBrand(ctx context.Context, id string) error
 }
 
-type ESIndexer struct {
+type repoES struct {
 	client *elasticsearch.Client
 }
 
-func NewIndexer(client *elasticsearch.Client) *ESIndexer {
-	return &ESIndexer{client: client}
+func NewIndexer(client *elasticsearch.Client) IndexerRepository {
+	return &repoES{client: client}
 }
 
 type BrandDoc struct {
@@ -29,7 +29,7 @@ type BrandDoc struct {
 	Status      string `json:"status"`
 }
 
-func (e *ESIndexer) IndexBrand(ctx context.Context, b BrandDoc) error {
+func (e *repoES) IndexBrand(ctx context.Context, b BrandDoc) error {
 	data, err := json.Marshal(b)
 	if err != nil {
 		return err
@@ -51,7 +51,7 @@ func (e *ESIndexer) IndexBrand(ctx context.Context, b BrandDoc) error {
 	return nil
 }
 
-func (e *ESIndexer) DeleteBrand(ctx context.Context, id string) error {
+func (e *repoES) DeleteBrand(ctx context.Context, id string) error {
 	res, err := e.client.Delete(
 		"brands",
 		id,

@@ -1,16 +1,16 @@
 package storage
 
 import (
+	"context"
 	"errors"
 	"gorm.io/gorm"
 	"time"
-	"user_service/internal/db"
 	"user_service/internal/models"
 )
 
-func SelectHistory(userID string, limit int) ([]models.History, error) {
+func (r *repoUser) SelectHistory(ctx context.Context, userID string, limit int) ([]models.History, error) {
 	var history []models.History
-	err := db.DB().Where("user_id=?", userID).Order("viewed_at DESC").Limit(limit).Find(&history).Error
+	err := r.db.WithContext(ctx).Where("user_id=?", userID).Order("viewed_at DESC").Limit(limit).Find(&history).Error
 	if err != nil {
 		return nil, err
 	}
@@ -18,16 +18,16 @@ func SelectHistory(userID string, limit int) ([]models.History, error) {
 	return history, nil
 }
 
-func DeleteViewHistory(userID, productID string) error {
+func (r *repoUser) DeleteViewHistory(ctx context.Context, userID, productID string) error {
 	var his models.History
 	if productID == "" {
-		err := db.DB().Where("user_id=?", userID).Delete(&his).Error
+		err := r.db.WithContext(ctx).Where("user_id=?", userID).Delete(&his).Error
 		if err != nil {
 			return err
 		}
 		return nil
 	}
-	err := db.DB().Where("user_id=? and product_id=?", userID, productID).Delete(&his).Error
+	err := r.db.WithContext(ctx).Where("user_id=? and product_id=?", userID, productID).Delete(&his).Error
 	if err != nil {
 		return err
 	}
@@ -35,14 +35,14 @@ func DeleteViewHistory(userID, productID string) error {
 	return nil
 }
 
-func CreateView(userID, productID uint64) error {
+func (r *repoUser) CreateView(ctx context.Context, userID, productID uint64) error {
 	view := models.History{
 		UserID:    userID,
 		ProductID: productID,
 		ViewedAt:  time.Now(),
 	}
 
-	err := db.DB().Create(&view).Error
+	err := r.db.WithContext(ctx).Create(&view).Error
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func CreateView(userID, productID uint64) error {
 	return nil
 }
 
-func SelectView(userID, productID uint64) (bool, error) {
+func (r *repoUser) SelectView(ctx context.Context, userID, productID uint64) (bool, error) {
 	now := time.Now()
 	startOfDay := time.Date(
 		now.Year(), now.Month(), now.Day(),
@@ -59,7 +59,7 @@ func SelectView(userID, productID uint64) (bool, error) {
 	)
 
 	var hist models.History
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Where("user_id = ? AND product_id = ? AND viewed_at >= ?", userID, productID, startOfDay).
 		First(&hist).
 		Error
@@ -73,9 +73,9 @@ func SelectView(userID, productID uint64) (bool, error) {
 	return true, nil
 }
 
-func CountView(data []uint64) (int, error) {
+func (r *repoUser) CountView(ctx context.Context, data []uint64) (int, error) {
 	var count int
-	err := db.DB().Model(models.History{}).Select("COUNT(*) as count").Where("product_id in ?", data).Find(&count).Error
+	err := r.db.WithContext(ctx).Model(models.History{}).Select("COUNT(*) as count").Where("product_id in ?", data).Find(&count).Error
 	if err != nil {
 		return 0, err
 	}
@@ -83,9 +83,9 @@ func CountView(data []uint64) (int, error) {
 	return count, nil
 }
 
-func GetProductViewsStats(productsID []uint64) ([]models.ProductViewStat, error) {
+func (r *repoUser) GetProductViewsStats(ctx context.Context, productsID []uint64) ([]models.ProductViewStat, error) {
 	var rows []models.ProductViewStat
-	err := db.DB().
+	err := r.db.WithContext(ctx).
 		Model(&models.History{}).
 		Select("product_id, COUNT(*) AS views").
 		Where("product_id IN ?", productsID).

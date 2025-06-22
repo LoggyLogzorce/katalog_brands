@@ -1,16 +1,16 @@
 package storage
 
 import (
-	"auth_service/internal/db"
 	"auth_service/internal/models"
+	"context"
 	"fmt"
 )
 
-func InsertUser(data models.User) error {
+func (r *repoUser) InsertUser(ctx context.Context, data models.User) error {
 	if data.Role == "" {
 		data.Role = "user"
 	}
-	err := db.DB().Save(&data).Error
+	err := r.db.WithContext(ctx).Save(&data).Error
 	fmt.Println(err)
 	return err
 }

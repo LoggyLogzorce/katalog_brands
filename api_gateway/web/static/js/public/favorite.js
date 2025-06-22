@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 Добавляйте понравившиеся товары в избранное, чтобы не потерять их.
                 Здесь будут храниться все товары, которые вам интересны.
               </p>
-              <a href="/js/public" class="btn btn-primary">
+              <a href="/" class="btn btn-primary">
                 <i class="fas fa-shopping-bag"></i> Перейти к покупкам
               </a>
             </div>
@@ -115,9 +115,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
     // Кнопка "Поделиться списком"
-    document.getElementById('share-all-btn').addEventListener('click', function () {
-        alert('Список избранных товаров отправлен!');
-    });
+    // document.getElementById('share-all-btn').addEventListener('click', function () {
+    //     alert('Список избранных товаров отправлен!');
+    // });
 
     // Кнопка "Очистить избранное"
     document.getElementById('clear-all-btn').addEventListener('click', function () {

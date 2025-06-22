@@ -9,19 +9,19 @@ import (
 	"github.com/elastic/go-elasticsearch/v7"
 )
 
-type Indexer interface {
-	IndexProduct(ctx context.Context, product ProductDoc) error
+type IndexerRepository interface {
+	IndexProduct(ctx context.Context, p ProductDoc) error
 	DeleteProduct(ctx context.Context, id string) error
 	IndexCategory(ctx context.Context, c CategoryDoc) error
 	DeleteCategory(ctx context.Context, id string) error
 }
 
-type ESIndexer struct {
+type repoES struct {
 	client *elasticsearch.Client
 }
 
-func NewIndexer(client *elasticsearch.Client) *ESIndexer {
-	return &ESIndexer{client: client}
+func NewIndexer(client *elasticsearch.Client) IndexerRepository {
+	return &repoES{client: client}
 }
 
 type ProductDoc struct {
@@ -40,7 +40,7 @@ type CategoryDoc struct {
 	Photo string `json:"photo"`
 }
 
-func (e *ESIndexer) IndexProduct(ctx context.Context, p ProductDoc) error {
+func (e *repoES) IndexProduct(ctx context.Context, p ProductDoc) error {
 	data, err := json.Marshal(p)
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func (e *ESIndexer) IndexProduct(ctx context.Context, p ProductDoc) error {
 	return nil
 }
 
-func (e *ESIndexer) DeleteProduct(ctx context.Context, id string) error {
+func (e *repoES) DeleteProduct(ctx context.Context, id string) error {
 	res, err := e.client.Delete(
 		"products",
 		id,
@@ -79,7 +79,7 @@ func (e *ESIndexer) DeleteProduct(ctx context.Context, id string) error {
 	return nil
 }
 
-func (e *ESIndexer) IndexCategory(ctx context.Context, c CategoryDoc) error {
+func (e *repoES) IndexCategory(ctx context.Context, c CategoryDoc) error {
 	data, err := json.Marshal(c)
 	if err != nil {
 		return err
@@ -101,7 +101,7 @@ func (e *ESIndexer) IndexCategory(ctx context.Context, c CategoryDoc) error {
 	return nil
 }
 
-func (e *ESIndexer) DeleteCategory(ctx context.Context, id string) error {
+func (e *repoES) DeleteCategory(ctx context.Context, id string) error {
 	res, err := e.client.Delete(
 		"categories",
 		id,

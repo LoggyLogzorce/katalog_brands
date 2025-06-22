@@ -10,14 +10,22 @@ import (
 	"strings"
 )
 
-func Login(c *gin.Context) {
+type AuthHandler struct {
+	Repo storage.UserRepository
+}
+
+func NewAuthHandler(authRepo storage.UserRepository) *AuthHandler {
+	return &AuthHandler{Repo: authRepo}
+}
+
+func (h *AuthHandler) Login(c *gin.Context) {
 	var req models.User
 	if err := c.ShouldBindBodyWithJSON(&req); err != nil {
 		c.JSON(400, gin.H{"error": "invalid request format"})
 		return
 	}
 
-	user, err := storage.SelectUser(req)
+	user, err := h.Repo.SelectUser(c.Request.Context(), req)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.AbortWithStatusJSON(401, gin.H{"error": "не верные email или пароль"})
